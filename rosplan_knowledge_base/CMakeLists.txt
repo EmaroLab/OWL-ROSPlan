@@ -14,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
   diagnostic_msgs
   visualization_msgs
   tf
+  armor_msgs
 )
 
 find_package(FLEX REQUIRED)
@@ -29,7 +30,7 @@ find_package(Boost REQUIRED COMPONENTS
 ## Declare things to be passed to dependent projects
 catkin_package(
   LIBRARIES ${PROJECT_NAME}
-  CATKIN_DEPENDS roscpp rospy std_msgs std_srvs rosplan_knowledge_msgs nav_msgs mongodb_store geometry_msgs diagnostic_msgs visualization_msgs tf
+  CATKIN_DEPENDS roscpp rospy std_msgs std_srvs rosplan_knowledge_msgs nav_msgs mongodb_store geometry_msgs diagnostic_msgs visualization_msgs tf armor_msgs
   DEPENDS
 )
 
@@ -83,7 +84,8 @@ set(KNOWLEDGE_SOURCES
 	src/KnowledgeComparitor.cpp
 	src/DomainParser.cpp
 	src/VALVisitorOperator.cpp
-	src/VALVisitorPredicate.cpp)
+	src/VALVisitorPredicate.cpp
+    src/ArmorManager.cpp)
 
 ## Declare cpp executables
 add_executable(knowledgeBase ${KNOWLEDGE_SOURCES} ${VAL_SOURCES})

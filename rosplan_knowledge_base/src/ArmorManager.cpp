@@ -1,7 +1,4 @@
-#include <string>
-#include <ros/ros.h>
 #include "rosplan_knowledge_base/ArmorManager.h"
-#include "armor_msgs/ArmorDirective.h"
 
 namespace KCL_rosplan{
 
@@ -13,7 +10,10 @@ namespace KCL_rosplan{
 
         this->msgTemplate.client_name = "KCL_rosplan";
         this->msgTemplate.reference_name = refName;
+    }
 
+    std::string ArmorManager::getRefName() {
+        return this->refName;
     }
 
     bool ArmorManager::pollDomainOntology() {

@@ -1,0 +1,66 @@
+module plan:
+input SOURCE, a0_complete, a1_complete, a2_complete, a3_complete, a4_complete, a5_complete
+output SINK, a0_dispatch, a1_dispatch, a2_dispatch, a3_dispatch, a4_dispatch, a5_dispatch
+signal e0, e0, e1, e2, e3, e4, e5 in
+run action0
+ || action0
+ || action1
+ || action2
+ || action3
+ || action4
+ || action5
+end
+end module
+
+module action0:
+output e0;
+  emit a0_dispatch;
+  await a0_complete;
+emit e0;
+end module
+
+module action1:
+input e0;
+output e1;
+  await e0;
+  emit a1_dispatch;
+  await a1_complete;
+emit e1;
+end module
+
+module action2:
+input e1;
+output e2;
+  await e1;
+  emit a2_dispatch;
+  await a2_complete;
+emit e2;
+end module
+
+module action3:
+input e2;
+output e3;
+  await e2;
+  emit a3_dispatch;
+  await a3_complete;
+emit e3;
+end module
+
+module action4:
+input e3;
+output e4;
+  await e3;
+  emit a4_dispatch;
+  await a4_complete;
+emit e4;
+end module
+
+module action5:
+input e4;
+output e5;
+  await e4;
+  emit a5_dispatch;
+  await a5_complete;
+emit e5;
+end module
+

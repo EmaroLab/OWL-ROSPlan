@@ -445,6 +445,7 @@ int main(int argc, char **argv)
 {
 	ros::init(argc, argv, "rosplan_knowledge_base");
 	ros::NodeHandle n;
+    ros::NodeHandlePtr n_ptr = ros::NodeHandlePtr(&n);
 
 	// parameters
 	std::string domainPath;
@@ -454,6 +455,14 @@ int main(int argc, char **argv)
 	ROS_INFO("KCL: (KB) Parsing domain");
 	kb.domain_parser.domain_parsed = false;
 	kb.domain_parser.parseDomain(domainPath);
+
+    // connecting to armor
+
+    KCL_rosplan::ArmorManager armorRef = KCL_rosplan::ArmorManager(kb.domain_parser.domain_name, n_ptr);
+    if (!armorRef.pollDomainOntology()){
+        ROS_ERROR("KCL: Cannot locate a problem ontology for the specified domain on ARMOR server.");
+        return 1;
+    }
 
 	// fetch domain info
 	ros::ServiceServer typeServer = n.advertiseService("/kcl_rosplan/get_domain_types", &KCL_rosplan::KnowledgeBase::getTypes, &kb);

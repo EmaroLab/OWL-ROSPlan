@@ -29,6 +29,8 @@
 #include "VALVisitorOperator.h"
 #include "VALVisitorPredicate.h"
 
+#include "ArmorManager.h"
+
 #ifndef KCL_knowledgebase
 #define KCL_knowledgebase
 

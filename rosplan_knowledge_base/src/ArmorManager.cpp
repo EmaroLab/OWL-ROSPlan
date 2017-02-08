@@ -7,32 +7,164 @@ namespace KCL_rosplan{
         this->nh = nh;
 
         this->armorClient = nh->serviceClient<armor_msgs::ArmorDirective>("armor_interface_srv", false);
+        this->armorClientSerial = nh->serviceClient<armor_msgs::ArmorDirectiveList>("armor_interface_serialized_srv", false);
 
-        this->msgTemplate.client_name = "KCL_rosplan";
-        this->msgTemplate.reference_name = refName;
+        this->msgTemplate.armor_request.client_name = "KCL_rosplan";
+        this->msgTemplate.armor_request.reference_name = refName;
     }
 
     std::string ArmorManager::getRefName() {
         return this->refName;
     }
 
-    bool ArmorManager::pollDomainOntology() {
-        setMsgDirective(msgTemplate, "GET", "ALL", "REFS");
-        armor_msgs::ArmorDirectiveResponse res;
-        if(armorClient.call(msgTemplate, res)){
-            if (res.success) {
-                return std::find(res.queried_objects.begin(), res.queried_objects.end(), refName)
-                       != res.queried_objects.end();
-            }
-        }
-
-    }
-
     void ArmorManager::setMsgDirective(armor_msgs::ArmorDirectiveRequest& msg, std::string command,
                                        std::string primarySpec, std::string secondarySpec) {
-        msg.command = command;
-        msg.primary_command_spec = primarySpec;
-        msg.secondary_command_spec = secondarySpec;
+        msg.armor_request.command = command;
+        msg.armor_request.primary_command_spec = primarySpec;
+        msg.armor_request.secondary_command_spec = secondarySpec;
     }
 
+    armor_msgs::ArmorDirectiveRequest ArmorManager::newMessage(std::string command, std::string primarySpec,
+                                                               std::string secondarySpec) {
+        armor_msgs::ArmorDirectiveRequest newMsg = this->msgTemplate;
+        setMsgDirective(newMsg, command, primarySpec, secondarySpec);
+        return newMsg;
+    }
+
+    armor_msgs::ArmorDirectiveRequest ArmorManager::newMessage(std::string command, std::string primarySpec,
+                                                               std::string secondarySpec, std::vector<std::string> args) {
+        armor_msgs::ArmorDirectiveRequest newMsg = this->msgTemplate;
+        setMsgDirective(newMsg, command, primarySpec, secondarySpec);
+        newMsg.armor_request.args = args;
+        return newMsg;
+    }
+
+    bool ArmorManager::pollDomainOntology() {
+        armor_msgs::ArmorDirectiveRequest req = newMessage("GET", "ALL", "REFS");
+        armor_msgs::ArmorDirectiveResponse res;
+        if(armorClient.call(req, res)) {
+            if (res.armor_response.success) {
+                return std::find(res.armor_response.queried_objects.begin(), res.armor_response.queried_objects.end(), refName)
+                       != res.armor_response.queried_objects.end();
+            }else return false;
+        }else return false;
+    }
+
+    std::string ArmorManager::addPredicate(std::string predicateName, rosplan_knowledge_msgs::KnowledgeItem msg, bool normative){
+        std::string id = std::to_string(maxId++);
+        std::string predicateId = predicateName + "_" + id;
+
+        std::vector<std::string> params;
+        for (size_t i = 0; i < msg.values.size(); i++){
+            params.push_back(msg.values[i].value);
+        }
+
+        armor_msgs::ArmorDirectiveRequest req = newMessage("ADD", "IND", "CLASS", {predicateId, predicateName});
+        armor_msgs::ArmorDirectiveResponse res;
+
+        // create predicate individual
+        if(armorClient.call(req, res)){
+            if (!normative) {
+                req.armor_request.args = {predicateId, "Predicate_descriptive"};
+                if (!armorClient.call(req, res)) return "";
+            }else{
+                req.armor_request.args = {predicateId, "Predicate_normative"};
+                if (!armorClient.call(req, res)) return "";
+            }
+            // assign arguments
+            for (size_t i = 0; i < params.size(); i++){
+                req = newMessage("ADD", "OBJECTPROP", "IND", {argsProperties[i], predicateId, params[i]});
+                if (!armorClient.call(req, res)) return "";
+            }
+            applyChanges();
+            return predicateId;
+        }
+        return "";
+    }
+
+    bool ArmorManager::removeEntity(std::string entityName){
+        armor_msgs::ArmorDirectiveResponse res;
+        armor_msgs::ArmorDirectiveRequest req = newMessage("REMOVE", "IND", "", {entityName});
+        return armorClient.call(req, res) && applyChanges();
+    }
+
+    std::string ArmorManager::addInstance(std::string type, std::string name) {
+        std::string instanceId = name + "_" + std::to_string(maxId++);;
+        armor_msgs::ArmorDirectiveResponse res;
+        armor_msgs::ArmorDirectiveRequest req = newMessage("ADD", "IND", "CLASS", {instanceId, type});
+        if (armorClient.call(req, res) && applyChanges()) return instanceId;
+        else return "";
+    }
+
+    std::string ArmorManager::addFact(std::string predicateName, rosplan_knowledge_msgs::KnowledgeItem msg) {
+        return addPredicate(predicateName, msg, false);
+    }
+
+    std::string ArmorManager::addNorm(std::string predicateName, rosplan_knowledge_msgs::KnowledgeItem msg) {
+        return addPredicate(predicateName, msg, true);
+    }
+
+    std::vector<rosplan_knowledge_msgs::KnowledgeItem> ArmorManager::getCurrentGoals(){
+        //TODO add exceptions
+        std::vector<rosplan_knowledge_msgs::KnowledgeItem> goals;
+        armor_msgs::ArmorDirectiveRequest req =
+                newMessage("QUERY", "OBJECTPROP", "IND", {"has_final_state", "Problem_instance"});
+        armor_msgs::ArmorDirectiveResponse res;
+        if(armorClient.call(req, res) && res.armor_response.success){
+            // initialize goal
+            rosplan_knowledge_msgs::KnowledgeItem goal;
+            goal.knowledge_type = 1;
+            goal.function_value = 0;
+            goal.is_negative = false;
+            // iterate on all current goals
+            std::vector<std::string>::iterator goalsIt;
+            for (goalsIt=res.armor_response.queried_objects.begin();
+                 goalsIt!=res.armor_response.queried_objects.end(); goalsIt++){
+                armor_msgs::ArmorDirectiveResponse tmpRes1;
+                req = newMessage("QUERY", "IND", "OBJECTPROP", {*goalsIt});
+                if (armorClient.call(req, tmpRes1) && tmpRes1.armor_response.success){
+                    // iterate on current predicate args
+                    goal.attribute_name = *goalsIt;
+                    std::vector<std::string>::iterator argsIt;
+                    for (argsIt = tmpRes1.armor_response.queried_objects.begin();
+                         argsIt!= tmpRes1.armor_response.queried_objects.end(); argsIt++){
+                        armor_msgs::ArmorDirectiveResponse tmpRes2;
+                        req = newMessage("QUERY", "OBJECTPROP", "IND", {*argsIt, *goalsIt});
+                        if (armorClient.call(req, tmpRes2) && tmpRes2.armor_response.success){
+                            diagnostic_msgs::KeyValue kv;
+                            kv.key = *argsIt;
+                            kv.value = tmpRes2.armor_response.queried_objects[0];
+                            goal.values.push_back(kv);
+                        }else return goals;
+                    }
+                    goals.push_back(goal);
+                }else return goals;
+            }
+        }else return goals;
+        return goals;
+    }
+
+    bool ArmorManager::clearClass(std::string className) {
+        armor_msgs::ArmorDirectiveRequest req = newMessage("QUERY", "IND", "CLASS", {className});
+        armor_msgs::ArmorDirectiveResponse res;
+        if(!armorClient.call(req, res) || !res.armor_response.success) return false;
+
+        armor_msgs::ArmorDirectiveListRequest serialRequest;
+        armor_msgs::ArmorDirectiveListResponse serialResponse;
+        for (uint i = 0; i < res.armor_response.queried_objects.size(); i++){
+            armor_msgs::ArmorDirectiveReq tmpReq = newMessage("REMOVE", "IND", "", {}).armor_request;
+            serialRequest.armor_requests.push_back(tmpReq);
+        }
+
+        return armorClientSerial.call(serialRequest, serialResponse) && serialResponse.success && applyChanges();
+    }
+
+    bool ArmorManager::applyChanges(){
+        armor_msgs::ArmorDirectiveRequest req = newMessage("APPLY", "", "", {});
+        armor_msgs::ArmorDirectiveResponse res;
+        if(!armorClient.call(req, res) || !res.armor_response.success) return false;
+
+        req = newMessage("REASON", "", "");
+        return !(!armorClient.call(req, res) || !res.armor_response.success);
+    }
 }

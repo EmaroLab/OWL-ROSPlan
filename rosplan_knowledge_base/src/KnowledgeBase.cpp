@@ -109,6 +109,9 @@ namespace KCL_rosplan {
 					iit = model_instances[msg.instance_type].erase(iit);
 					if(iit!=model_instances[msg.instance_type].begin()) iit--;
 					plan_filter.checkFilters(msg, false);
+                    // remove instance from ontology
+                    // affected attributes are automatically deleted by the reasoner
+                    armorManager->removeEntity(msg.instance_name);
 
 					// remove affected domain attributes
 					std::vector<rosplan_knowledge_msgs::KnowledgeItem>::iterator pit;
@@ -150,6 +153,12 @@ namespace KCL_rosplan {
 					ROS_INFO("KCL: (KB) Removing domain attribute (%s)", msg.attribute_name.c_str());
 					plan_filter.checkFilters(msg, false);
 					pit = model_facts.erase(pit);
+
+                    // erase predicate from ontology
+                    long index = pit - model_facts.begin();
+                    armorManager->removeEntity(model_facts_ontonames[index]);
+                    model_facts_ontonames.erase(model_facts_ontonames.begin() + index);
+
 					if(pit!=model_facts.begin()) pit--;
 					if(pit==model_facts.end()) break;
 				}
@@ -169,6 +178,9 @@ namespace KCL_rosplan {
 		model_facts.clear();
 		model_functions.clear();
 		model_goals.clear();
+
+        // clear ontology
+        return armorManager->clearClass("Item");
 	}
 
 	/**
@@ -177,11 +189,18 @@ namespace KCL_rosplan {
 	void KnowledgeBase::removeMissionGoal(rosplan_knowledge_msgs::KnowledgeItem &msg) {
 
 		bool changed = false;
+        // TODO maybe to comment
 		std::vector<rosplan_knowledge_msgs::KnowledgeItem>::iterator git;
 		for(git=model_goals.begin(); git!=model_goals.end(); git++) {
 			if(KnowledgeComparitor::containsKnowledge(msg, *git)) {
 				ROS_INFO("KCL: (KB) Removing goal (%s)", msg.attribute_name.c_str());
 				git = model_goals.erase(git);
+
+                // erase norms from ontology
+                long index = git - model_facts.begin();
+                armorManager->removeEntity(model_norms_ontonames[index]);
+                model_norms_ontonames.erase(model_norms_ontonames.begin() + index);
+
 				if(git!=model_goals.begin()) git--;
 				if(git==model_goals.end()) break;
 			}
@@ -215,6 +234,7 @@ namespace KCL_rosplan {
 				ROS_INFO("KCL: (KB) Adding instance (%s, %s)", msg.instance_type.c_str(), msg.instance_name.c_str());
 				model_instances[msg.instance_type].push_back(msg.instance_name);
 				plan_filter.checkFilters(msg, true);
+				armorManager->addInstance(msg.instance_type, msg.instance_name);
 			}
 
 		} else if(msg.knowledge_type == rosplan_knowledge_msgs::KnowledgeItem::FACT) {
@@ -228,6 +248,8 @@ namespace KCL_rosplan {
 			}
 			ROS_INFO("KCL: (KB) Adding domain attribute (%s)", msg.attribute_name.c_str());
 			model_facts.push_back(msg);
+			std::string predicateName = armorManager->addFact(msg.attribute_name, msg);
+            model_facts_ontonames.push_back(predicateName); //saves the name used in ontology so it is easier to remove it
 			plan_filter.checkFilters(msg, true);
 
 		} else if(msg.knowledge_type == rosplan_knowledge_msgs::KnowledgeItem::FUNCTION) {
@@ -252,7 +274,7 @@ namespace KCL_rosplan {
 	 * add mission goal to knowledge base
 	 */
 	void KnowledgeBase::addMissionGoal(rosplan_knowledge_msgs::KnowledgeItem &msg) {
-
+        // TODO maybe to comment
 		std::vector<rosplan_knowledge_msgs::KnowledgeItem>::iterator pit;
 		for(pit=model_goals.begin(); pit!=model_goals.end(); pit++) {
 			if(KnowledgeComparitor::containsKnowledge(msg, *pit))
@@ -260,6 +282,8 @@ namespace KCL_rosplan {
 		}
 		ROS_INFO("KCL: (KB) Adding mission goal (%s)", msg.attribute_name.c_str());
 		model_goals.push_back(msg);
+        std::string predicateName = armorManager->addNorm(msg.attribute_name, msg);
+        model_norms_ontonames.push_back(predicateName); //saves the name used in ontology so it is easier to remove it
 	}
 
 	/*----------------*/
@@ -305,10 +329,11 @@ namespace KCL_rosplan {
 	}
 
 	bool KnowledgeBase::getCurrentGoals(rosplan_knowledge_msgs::GetAttributeService::Request  &req, rosplan_knowledge_msgs::GetAttributeService::Response &res) {
-
-		for(size_t i=0; i<model_goals.size(); i++)
-			res.attributes.push_back(model_goals[i]);
-		return true;
+//		for(size_t i=0; i<model_goals.size(); i++)
+//			res.attributes.push_back(model_goals[i]);
+//		return true;
+        res.attributes = armorManager->getCurrentGoals();
+        return true;
 	}
 
 	/*-----------------*/
@@ -457,9 +482,9 @@ int main(int argc, char **argv)
 	kb.domain_parser.parseDomain(domainPath);
 
     // connecting to armor
-
-    KCL_rosplan::ArmorManager armorRef = KCL_rosplan::ArmorManager(kb.domain_parser.domain_name, n_ptr);
-    if (!armorRef.pollDomainOntology()){
+	KCL_rosplan::ArmorManager armorManager = KCL_rosplan::ArmorManager(kb.domain_parser.domain_name, n_ptr);
+    kb.armorManager = &armorManager;
+    if (!kb.armorManager->pollDomainOntology()){
         ROS_ERROR("KCL: Cannot locate a problem ontology for the specified domain on ARMOR server.");
         return 1;
     }

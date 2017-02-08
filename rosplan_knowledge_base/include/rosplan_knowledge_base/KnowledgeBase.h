@@ -51,11 +51,16 @@ namespace KCL_rosplan {
 		// domain
 		DomainParser domain_parser;
 
+		// armor
+		ArmorManager* armorManager = NULL;
+
 		// model
 		std::map<std::string, std::vector<std::string> > model_instances;
 		std::vector<rosplan_knowledge_msgs::KnowledgeItem> model_facts;
+		std::vector<std::string> model_facts_ontonames;
 		std::vector<rosplan_knowledge_msgs::KnowledgeItem> model_functions;
 		std::vector<rosplan_knowledge_msgs::KnowledgeItem> model_goals;
+        std::vector<std::string> model_norms_ontonames;
 
 		// plan and mission filter
 		PlanFilter plan_filter;

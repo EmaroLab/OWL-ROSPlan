@@ -6,6 +6,9 @@ namespace KCL_rosplan{
         this->refName = refName;
         this->nh = nh;
 
+        ROS_INFO("Waiting for ARMOR...");
+        ros::service::waitForService("armor_interface_srv");
+        ROS_INFO("Connected!");
         this->armorClient = nh->serviceClient<armor_msgs::ArmorDirective>("armor_interface_srv", false);
         this->armorClientSerial = nh->serviceClient<armor_msgs::ArmorDirectiveList>("armor_interface_serialized_srv", false);
 
@@ -88,12 +91,10 @@ namespace KCL_rosplan{
         return armorClient.call(req, res) && applyChanges();
     }
 
-    std::string ArmorManager::addInstance(std::string type, std::string name) {
-        std::string instanceId = name + "_" + std::to_string(maxId++);;
+    bool ArmorManager::addInstance(std::string type, std::string name) {
         armor_msgs::ArmorDirectiveResponse res;
-        armor_msgs::ArmorDirectiveRequest req = newMessage("ADD", "IND", "CLASS", {instanceId, type});
-        if (armorClient.call(req, res) && applyChanges()) return instanceId;
-        else return "";
+        armor_msgs::ArmorDirectiveRequest req = newMessage("ADD", "IND", "CLASS", {name, type});
+        return armorClient.call(req, res) && applyChanges();
     }
 
     std::string ArmorManager::addFact(std::string predicateName, rosplan_knowledge_msgs::KnowledgeItem msg) {
@@ -128,14 +129,17 @@ namespace KCL_rosplan{
                     std::vector<std::string>::iterator argsIt;
                     for (argsIt = tmpRes1.armor_response.queried_objects.begin();
                          argsIt!= tmpRes1.armor_response.queried_objects.end(); argsIt++){
-                        armor_msgs::ArmorDirectiveResponse tmpRes2;
-                        req = newMessage("QUERY", "OBJECTPROP", "IND", {*argsIt, *goalsIt});
-                        if (armorClient.call(req, tmpRes2) && tmpRes2.armor_response.success){
-                            diagnostic_msgs::KeyValue kv;
-                            kv.key = *argsIt;
-                            kv.value = tmpRes2.armor_response.queried_objects[0];
-                            goal.values.push_back(kv);
-                        }else return goals;
+                        //filter out irrelevant or inferred properties
+                        if (std::find(argsProperties.begin(), argsProperties.end(), *argsIt) != argsProperties.end()) {
+                            armor_msgs::ArmorDirectiveResponse tmpRes2;
+                            req = newMessage("QUERY", "OBJECTPROP", "IND", {*argsIt, *goalsIt});
+                            if (armorClient.call(req, tmpRes2) && tmpRes2.armor_response.success) {
+                                diagnostic_msgs::KeyValue kv;
+                                kv.key = *argsIt;
+                                kv.value = tmpRes2.armor_response.queried_objects[0];
+                                goal.values.push_back(kv);
+                            } else return goals;
+                        }
                     }
                     goals.push_back(goal);
                 }else return goals;
@@ -166,5 +170,23 @@ namespace KCL_rosplan{
 
         req = newMessage("REASON", "", "");
         return !(!armorClient.call(req, res) || !res.armor_response.success);
+    }
+
+    bool ArmorManager::loadOntology(std::string path, std::string iri) {
+        armor_msgs::ArmorDirectiveRequest req = newMessage("LOAD", "FILE", "", {path, iri, "true", "PELLET", "true"});
+        armor_msgs::ArmorDirectiveResponse res;
+        return armorClient.call(req, res) && res.armor_response.success;
+    }
+
+    bool ArmorManager::mountOnOntology(){
+        armor_msgs::ArmorDirectiveRequest req = newMessage("MOUNT", "", "", {});
+        armor_msgs::ArmorDirectiveResponse res;
+        return armorClient.call(req, res) && res.armor_response.success;
+    }
+
+    bool ArmorManager::unmountFromOntology(){
+        armor_msgs::ArmorDirectiveRequest req = newMessage("UNMOUNT", "", "", {});
+        armor_msgs::ArmorDirectiveResponse res;
+        return armorClient.call(req, res) && res.armor_response.success;
     }
 }

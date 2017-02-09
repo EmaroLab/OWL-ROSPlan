@@ -42,12 +42,15 @@ namespace KCL_rosplan {
         ArmorManager(std::string refName, ros::NodeHandlePtr nh);
         bool pollDomainOntology();
         std::string getRefName();
-        std::string addInstance(std::string type, std::string name);
+        bool addInstance(std::string type, std::string name);
         std::string addFact(std::string predicateName, rosplan_knowledge_msgs::KnowledgeItem msg);
         std::string addNorm(std::string predicateName, rosplan_knowledge_msgs::KnowledgeItem msg);
         bool removeEntity(std::string entityName);
         bool clearClass(std::string className);
         std::vector<rosplan_knowledge_msgs::KnowledgeItem> getCurrentGoals();
+        bool loadOntology(std::string path, std::string iri);
+        bool mountOnOntology();
+        bool unmountFromOntology();
 
     };
 

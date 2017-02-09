@@ -103,7 +103,6 @@ namespace KCL_rosplan {
 				std::string name = *iit;
 
 				if(name.compare(msg.instance_name)==0 || msg.instance_name.compare("")==0) {
-
 					// remove instance from knowledge base
 					ROS_INFO("KCL: (KB) Removing instance (%s, %s)", msg.instance_type.c_str(), (msg.instance_name.compare("")==0) ? "ALL" : msg.instance_name.c_str());
 					iit = model_instances[msg.instance_type].erase(iit);
@@ -194,13 +193,15 @@ namespace KCL_rosplan {
 		for(git=model_goals.begin(); git!=model_goals.end(); git++) {
 			if(KnowledgeComparitor::containsKnowledge(msg, *git)) {
 				ROS_INFO("KCL: (KB) Removing goal (%s)", msg.attribute_name.c_str());
-				git = model_goals.erase(git);
 
                 // erase norms from ontology
-                long index = git - model_facts.begin();
+                long index = git - model_goals.begin();
+
                 armorManager->removeEntity(model_norms_ontonames[index]);
                 model_norms_ontonames.erase(model_norms_ontonames.begin() + index);
 
+                // erase from ROSPlan
+                git = model_goals.erase(git);
 				if(git!=model_goals.begin()) git--;
 				if(git==model_goals.end()) break;
 			}
@@ -475,6 +476,10 @@ int main(int argc, char **argv)
 	// parameters
 	std::string domainPath;
 	n.param("/rosplan/domain_path", domainPath, std::string("common/domain.pddl"));
+    std::string ontologyPath;
+    n.param("/rosplan/owl_path", ontologyPath, std::string("common/ontology.owl"));
+    std::string iri;
+    n.param("/rosplan/iri", iri, std::string("https://github.com/EmaroLab/paco/owl/paco"));
 
 	KCL_rosplan::KnowledgeBase kb;
 	ROS_INFO("KCL: (KB) Parsing domain");
@@ -484,6 +489,12 @@ int main(int argc, char **argv)
     // connecting to armor
 	KCL_rosplan::ArmorManager armorManager = KCL_rosplan::ArmorManager(kb.domain_parser.domain_name, n_ptr);
     kb.armorManager = &armorManager;
+
+    if (!kb.armorManager->loadOntology(ontologyPath, iri)){
+        ROS_ERROR("KCL: failed to load the specified ontology in ARMOR.");
+        return 1;
+    }
+
     if (!kb.armorManager->pollDomainOntology()){
         ROS_ERROR("KCL: Cannot locate a problem ontology for the specified domain on ARMOR server.");
         return 1;

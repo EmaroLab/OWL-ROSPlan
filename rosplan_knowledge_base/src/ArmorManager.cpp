@@ -109,7 +109,7 @@ namespace KCL_rosplan{
         //TODO add exceptions
         std::vector<rosplan_knowledge_msgs::KnowledgeItem> goals;
         armor_msgs::ArmorDirectiveRequest req =
-                newMessage("QUERY", "OBJECTPROP", "IND", {"has_final_state", "Problem_instance"});
+                newMessage("QUERY", "OBJECTPROP", "IND", {"is_defined_by", "Final_state_instance"});
         armor_msgs::ArmorDirectiveResponse res;
         if(armorClient.call(req, res) && res.armor_response.success){
             // initialize goal
@@ -126,6 +126,7 @@ namespace KCL_rosplan{
                 if (armorClient.call(req, tmpRes1) && tmpRes1.armor_response.success){
                     // iterate on current predicate args
                     goal.attribute_name = *goalsIt;
+                    goal.values.clear();
                     std::vector<std::string>::iterator argsIt;
                     for (argsIt = tmpRes1.armor_response.queried_objects.begin();
                          argsIt!= tmpRes1.armor_response.queried_objects.end(); argsIt++){
@@ -152,11 +153,13 @@ namespace KCL_rosplan{
         armor_msgs::ArmorDirectiveRequest req = newMessage("QUERY", "IND", "CLASS", {className});
         armor_msgs::ArmorDirectiveResponse res;
         if(!armorClient.call(req, res) || !res.armor_response.success) return false;
+        if(res.armor_response.queried_objects.size() == 0) return true;
 
         armor_msgs::ArmorDirectiveListRequest serialRequest;
         armor_msgs::ArmorDirectiveListResponse serialResponse;
         for (uint i = 0; i < res.armor_response.queried_objects.size(); i++){
-            armor_msgs::ArmorDirectiveReq tmpReq = newMessage("REMOVE", "IND", "", {}).armor_request;
+            armor_msgs::ArmorDirectiveReq tmpReq =
+                        newMessage("REMOVE", "IND", "", {res.armor_response.queried_objects[i]}).armor_request;
             serialRequest.armor_requests.push_back(tmpReq);
         }
 
@@ -164,8 +167,12 @@ namespace KCL_rosplan{
     }
 
     bool ArmorManager::applyChanges(){
-        armor_msgs::ArmorDirectiveRequest req = newMessage("APPLY", "", "", {});
+        // explicitly states all predicates and individuals are disjoint, needed for SWRL rules to work
+        armor_msgs::ArmorDirectiveRequest req = newMessage("DISJOINT", "IND", "CLASS", {"Item"});
         armor_msgs::ArmorDirectiveResponse res;
+        if(!armorClient.call(req, res) || !res.armor_response.success) return false;
+
+        req = newMessage("APPLY", "", "", {});
         if(!armorClient.call(req, res) || !res.armor_response.success) return false;
 
         req = newMessage("REASON", "", "");

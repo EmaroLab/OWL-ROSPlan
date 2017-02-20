@@ -331,8 +331,7 @@ namespace KCL_rosplan {
 
 	bool KnowledgeBase::getCurrentGoals(rosplan_knowledge_msgs::GetAttributeService::Request  &req, rosplan_knowledge_msgs::GetAttributeService::Response &res) {
 //		for(size_t i=0; i<model_goals.size(); i++)
-//			res.attributes.push_back(model_goals[i]);
-//		return true;
+//            res.attributes.push_back(model_goals[i]);
         res.attributes = armorManager->getCurrentGoals();
         return true;
 	}

@@ -279,6 +279,7 @@ class PlanViewWidget(QWidget):
     called when the add goal button is clicked
     """
     def _handle_add_button_clicked(self, updateType, predName, combo):
+        args_key_list = ['has_first_arg', 'has_second_arg', 'has_third_arg']
         rospy.wait_for_service('/kcl_rosplan/update_knowledge_base')
         try:
             update_client = rospy.ServiceProxy('/kcl_rosplan/update_knowledge_base', KnowledgeUpdateService)
@@ -288,7 +289,10 @@ class PlanViewWidget(QWidget):
             index = 0
             for param in split(combo.currentText()):
                 pair = KeyValue()
-                pair.key = (self._predicate_param_label_list[knowledge.attribute_name])[index]
+                if index < len(args_key_list):
+                    pair.key = args_key_list[index]
+                else:
+                    pair.key = (self._predicate_param_label_list[knowledge.attribute_name])[index]
                 index = index + 1
                 pair.value = param
                 knowledge.values.append(pair)

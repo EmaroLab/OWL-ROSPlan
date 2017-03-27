@@ -190,13 +190,16 @@ namespace KCL_rosplan {
 		bool changed = false;
         // TODO maybe to comment
 		std::vector<rosplan_knowledge_msgs::KnowledgeItem>::iterator git;
+		ROS_ERROR("che schifo dio");
 		for(git=model_goals.begin(); git!=model_goals.end(); git++) {
+			ROS_ERROR("sempre sia schifato");
 			if(KnowledgeComparitor::containsKnowledge(msg, *git)) {
 				ROS_INFO("KCL: (KB) Removing goal (%s)", msg.attribute_name.c_str());
 
                 // erase norms from ontology
                 long index = git - model_goals.begin();
 
+                ROS_ERROR(model_norms_ontonames[index].c_str());
                 armorManager->removeEntity(model_norms_ontonames[index]);
                 model_norms_ontonames.erase(model_norms_ontonames.begin() + index);
 
@@ -330,11 +333,15 @@ namespace KCL_rosplan {
 	}
 
 	bool KnowledgeBase::getCurrentGoals(rosplan_knowledge_msgs::GetAttributeService::Request  &req, rosplan_knowledge_msgs::GetAttributeService::Response &res) {
-//		for(size_t i=0; i<model_goals.size(); i++)
-//            res.attributes.push_back(model_goals[i]);
         res.attributes = armorManager->getCurrentGoals();
         return true;
 	}
+
+    bool KnowledgeBase::getAllGoals(rosplan_knowledge_msgs::GetAttributeService::Request  &req, rosplan_knowledge_msgs::GetAttributeService::Response &res) {
+		for(size_t i=0; i<model_goals.size(); i++)
+            res.attributes.push_back(model_goals[i]);
+        return true;
+    }
 
 	/*-----------------*/
 	/* fetching domain */
@@ -519,7 +526,8 @@ int main(int argc, char **argv)
 	// fetch knowledge
 	ros::ServiceServer currentInstanceServer = n.advertiseService("/kcl_rosplan/get_current_instances", &KCL_rosplan::KnowledgeBase::getCurrentInstances, &kb);
 	ros::ServiceServer currentKnowledgeServer = n.advertiseService("/kcl_rosplan/get_current_knowledge", &KCL_rosplan::KnowledgeBase::getCurrentKnowledge, &kb);
-	ros::ServiceServer currentGoalServer = n.advertiseService("/kcl_rosplan/get_current_goals", &KCL_rosplan::KnowledgeBase::getCurrentGoals, &kb);
+	ros::ServiceServer currentGoalsServer = n.advertiseService("/kcl_rosplan/get_current_goals", &KCL_rosplan::KnowledgeBase::getCurrentGoals, &kb);
+    ros::ServiceServer allGoalsServer = n.advertiseService("/kcl_rosplan/get_all_goals", &KCL_rosplan::KnowledgeBase::getAllGoals, &kb);
 
 	// planning and mission filter
 	kb.plan_filter.notification_publisher = n.advertise<rosplan_knowledge_msgs::Notification>("/kcl_rosplan/notification", 10, true);

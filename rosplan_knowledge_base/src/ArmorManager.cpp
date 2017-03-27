@@ -111,7 +111,7 @@ namespace KCL_rosplan{
         armor_msgs::ArmorDirectiveRequest req =
                 newMessage("QUERY", "OBJECTPROP", "IND", {"is_defined_by", "Final_state_instance"});
         armor_msgs::ArmorDirectiveResponse res;
-        if(armorClient.call(req, res) && res.armor_response.success){
+        if(armorClient.call(req, res) && res.armor_response.success && res.armor_response.queried_objects.size() > 0){
             // initialize goal
             rosplan_knowledge_msgs::KnowledgeItem goal;
             goal.knowledge_type = 1;
@@ -119,13 +119,14 @@ namespace KCL_rosplan{
             goal.is_negative = false;
             // iterate on all current goals
             std::vector<std::string>::iterator goalsIt;
-            for (goalsIt=res.armor_response.queried_objects.begin();
-                 goalsIt!=res.armor_response.queried_objects.end(); goalsIt++){
+            for (goalsIt = res.armor_response.queried_objects.begin();
+                 goalsIt != res.armor_response.queried_objects.end(); goalsIt++){
                 armor_msgs::ArmorDirectiveResponse tmpRes1;
                 req = newMessage("QUERY", "IND", "OBJECTPROP", {*goalsIt});
                 if (armorClient.call(req, tmpRes1) && tmpRes1.armor_response.success){
                     // iterate on current predicate args
-                    goal.attribute_name = *goalsIt;
+                    std::string tmpName = *goalsIt;
+                    goal.attribute_name = tmpName.erase(goalsIt->rfind("_")).c_str();
                     goal.values.clear();
                     std::vector<std::string>::iterator argsIt;
                     for (argsIt = tmpRes1.armor_response.queried_objects.begin();
@@ -134,7 +135,8 @@ namespace KCL_rosplan{
                         if (std::find(argsProperties.begin(), argsProperties.end(), *argsIt) != argsProperties.end()) {
                             armor_msgs::ArmorDirectiveResponse tmpRes2;
                             req = newMessage("QUERY", "OBJECTPROP", "IND", {*argsIt, *goalsIt});
-                            if (armorClient.call(req, tmpRes2) && tmpRes2.armor_response.success) {
+                            if (armorClient.call(req, tmpRes2) && tmpRes2.armor_response.success
+                                && tmpRes2.armor_response.queried_objects.size() > 0) {
                                 diagnostic_msgs::KeyValue kv;
                                 kv.key = *argsIt;
                                 kv.value = tmpRes2.armor_response.queried_objects[0];

@@ -16,7 +16,7 @@ from rosplan_knowledge_msgs.msg import *
 
 from python_qt_binding import loadUi
 from python_qt_binding.QtCore import Qt, QTimer, Signal, Slot
-from python_qt_binding.QtGui import QHeaderView, QIcon, QTreeWidgetItem, QListWidgetItem, QWidget
+from python_qt_binding.QtGui import QHeaderView, QIcon, QTreeWidgetItem, QListWidgetItem, QWidget, QColor
 
 class PlanViewWidget(QWidget):
 
@@ -115,21 +115,28 @@ class PlanViewWidget(QWidget):
     def refresh_model(self):
         # goals
         rospy.wait_for_service('/kcl_rosplan/get_current_goals')
+        rospy.wait_for_service('/kcl_rosplan/get_all_goals')
         selected_list = []
         for item in self.goalView.selectedItems():
             selected_list.append(item.text())
         try:
-            goals_client = rospy.ServiceProxy('/kcl_rosplan/get_current_goals', GetAttributeService)
-            resp = goals_client('')
+            active_goals_client = rospy.ServiceProxy('/kcl_rosplan/get_current_goals', GetAttributeService)
+            all_goals_client = rospy.ServiceProxy('/kcl_rosplan/get_all_goals', GetAttributeService)
+            resp_active = active_goals_client('')
+            resp_all = all_goals_client('')
             self.goalView.clear()
             self._goal_list.clear()
-            for goal in resp.attributes:
+            for goal in resp_all.attributes:
                 item = QListWidgetItem(self.goalView)
                 goalText = '(' + goal.attribute_name
                 for keyval in goal.values:
                      goalText = goalText + ' ' + keyval.value
                 goalText = goalText + ')'
                 item.setText(goalText)
+                if goal not in resp_active.attributes:
+                    item.setBackground(QColor('#7fc97f'))
+                else: ## non ci entra mai
+                    item.setBackground(QColor('#f97070'))
                 self._goal_list[goalText] = goal
                 if goalText in selected_list:
                     item.setSelected(True)
@@ -142,16 +149,17 @@ class PlanViewWidget(QWidget):
             selected_list.append(item.text())
         try:
             model_client = rospy.ServiceProxy('/kcl_rosplan/get_current_knowledge', GetAttributeService)
-            resp = model_client('')
+            resp_active = model_client('')
             self.modelView.clear()
             self._fact_list.clear()
-            for attribute in resp.attributes:
+            for attribute in resp_active.attributes:
                 item = QListWidgetItem(self.modelView)
                 attributeText = '(' + attribute.attribute_name
                 for keyval in attribute.values:
                      attributeText = attributeText + ' ' + keyval.value
                 attributeText = attributeText + ')'
                 item.setText(attributeText)
+                item.setBackground(QColor('#a3a3ff'))
                 self._fact_list[attributeText] = attribute
                 if attributeText in selected_list:
                     item.setSelected(True)
@@ -168,10 +176,10 @@ class PlanViewWidget(QWidget):
         self.instanceView.clear()
         for typename in self._type_list:
             instance_client = rospy.ServiceProxy('/kcl_rosplan/get_current_instances', GetInstanceService)
-            resp = instance_client(typename)
+            resp_active = instance_client(typename)
             item = QTreeWidgetItem(self.instanceView)
             item.setText(0, typename)
-            for instancename in resp.instances:
+            for instancename in resp_active.instances:
                 inst = QTreeWidgetItem(item)
                 inst.setText(0, instancename)
             if typename in expanded_list:
@@ -279,7 +287,7 @@ class PlanViewWidget(QWidget):
     called when the add goal button is clicked
     """
     def _handle_add_button_clicked(self, updateType, predName, combo):
-        args_key_list = ['has_first_arg', 'has_second_arg', 'has_third_arg']
+        args_key_list = ['has_1st_arg', 'has_2nd_arg', 'has_3rd_arg']
         rospy.wait_for_service('/kcl_rosplan/update_knowledge_base')
         try:
             update_client = rospy.ServiceProxy('/kcl_rosplan/update_knowledge_base', KnowledgeUpdateService)

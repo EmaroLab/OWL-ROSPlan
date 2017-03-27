@@ -20,7 +20,7 @@ namespace KCL_rosplan {
         ros::ServiceClient armorClientSerial;
         armor_msgs::ArmorDirectiveRequest msgTemplate;
         int maxId = 0;
-        std::vector<std::string> argsProperties = {"has_first_arg", "has_second_arg", "has_third_arg"};
+        std::vector<std::string> argsProperties = {"has_1st_arg", "has_2nd_arg", "has_3rd_arg"};
 
         void setMsgDirective(armor_msgs::ArmorDirectiveRequest& msg, std::string command,
                              std::string primarySpec, std::string secondarySpec);

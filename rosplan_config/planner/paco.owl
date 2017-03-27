@@ -41,6 +41,27 @@
     
 
 
+    <!-- https://github.com/EmaroLab/paco/owl/paco#has_1st_arg -->
+
+    <owl:ObjectProperty rdf:about="https://github.com/EmaroLab/paco/owl/paco#has_1st_arg">
+        <rdfs:subPropertyOf rdf:resource="https://github.com/EmaroLab/paco/owl/paco#predicate_property"/>
+        <rdfs:domain rdf:resource="https://github.com/EmaroLab/paco/owl/paco#Predicate"/>
+        <rdfs:range rdf:resource="https://github.com/EmaroLab/paco/owl/paco#Object"/>
+        <owl:propertyDisjointWith rdf:resource="https://github.com/EmaroLab/paco/owl/paco#has_2nd_arg"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://github.com/EmaroLab/paco/owl/paco#has_2nd_arg -->
+
+    <owl:ObjectProperty rdf:about="https://github.com/EmaroLab/paco/owl/paco#has_2nd_arg">
+        <rdfs:subPropertyOf rdf:resource="https://github.com/EmaroLab/paco/owl/paco#predicate_property"/>
+        <rdfs:domain rdf:resource="https://github.com/EmaroLab/paco/owl/paco#Predicate"/>
+        <rdfs:range rdf:resource="https://github.com/EmaroLab/paco/owl/paco#Object"/>
+    </owl:ObjectProperty>
+    
+
+
     <!-- https://github.com/EmaroLab/paco/owl/paco#has_final_state -->
 
     <owl:ObjectProperty rdf:about="https://github.com/EmaroLab/paco/owl/paco#has_final_state">
@@ -51,42 +72,10 @@
     
 
 
-    <!-- https://github.com/EmaroLab/paco/owl/paco#has_first_arg -->
-
-    <owl:ObjectProperty rdf:about="https://github.com/EmaroLab/paco/owl/paco#has_first_arg">
-        <rdfs:subPropertyOf rdf:resource="https://github.com/EmaroLab/paco/owl/paco#predicate_property"/>
-        <rdfs:domain rdf:resource="https://github.com/EmaroLab/paco/owl/paco#Predicate"/>
-        <rdfs:range rdf:resource="https://github.com/EmaroLab/paco/owl/paco#Object"/>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://github.com/EmaroLab/paco/owl/paco#has_second_arg -->
-
-    <owl:ObjectProperty rdf:about="https://github.com/EmaroLab/paco/owl/paco#has_second_arg">
-        <rdfs:subPropertyOf rdf:resource="https://github.com/EmaroLab/paco/owl/paco#predicate_property"/>
-        <rdfs:domain rdf:resource="https://github.com/EmaroLab/paco/owl/paco#Predicate"/>
-        <rdfs:range rdf:resource="https://github.com/EmaroLab/paco/owl/paco#Object"/>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://github.com/EmaroLab/paco/owl/paco#has_third_arg -->
-
-    <owl:ObjectProperty rdf:about="https://github.com/EmaroLab/paco/owl/paco#has_third_arg">
-        <rdfs:subPropertyOf rdf:resource="https://github.com/EmaroLab/paco/owl/paco#predicate_property"/>
-        <rdfs:domain rdf:resource="https://github.com/EmaroLab/paco/owl/paco#Predicate"/>
-        <rdfs:range rdf:resource="https://github.com/EmaroLab/paco/owl/paco#Object"/>
-    </owl:ObjectProperty>
-    
-
-
     <!-- https://github.com/EmaroLab/paco/owl/paco#is_defined_by -->
 
     <owl:ObjectProperty rdf:about="https://github.com/EmaroLab/paco/owl/paco#is_defined_by">
         <rdfs:subPropertyOf rdf:resource="https://github.com/EmaroLab/paco/owl/paco#state_property"/>
-        <rdfs:domain rdf:resource="https://github.com/EmaroLab/paco/owl/paco#State"/>
-        <rdfs:range rdf:resource="https://github.com/EmaroLab/paco/owl/paco#Predicate"/>
     </owl:ObjectProperty>
     
 
@@ -119,9 +108,7 @@
 
     <!-- https://github.com/EmaroLab/paco/owl/paco#state_property -->
 
-    <owl:ObjectProperty rdf:about="https://github.com/EmaroLab/paco/owl/paco#state_property">
-        <rdfs:domain rdf:resource="https://github.com/EmaroLab/paco/owl/paco#State"/>
-    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:about="https://github.com/EmaroLab/paco/owl/paco#state_property"/>
     
 
 
@@ -140,10 +127,15 @@
 
     <owl:Class rdf:about="https://github.com/EmaroLab/paco/owl/paco#Final_state">
         <owl:equivalentClass>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://github.com/EmaroLab/paco/owl/paco#is_defined_by"/>
-                <owl:allValuesFrom rdf:resource="https://github.com/EmaroLab/paco/owl/paco#Predicate_normative"/>
-            </owl:Restriction>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="https://github.com/EmaroLab/paco/owl/paco#State"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="https://github.com/EmaroLab/paco/owl/paco#is_defined_by"/>
+                        <owl:allValuesFrom rdf:resource="https://github.com/EmaroLab/paco/owl/paco#Predicate_normative"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
         </owl:equivalentClass>
         <rdfs:subClassOf rdf:resource="https://github.com/EmaroLab/paco/owl/paco#State"/>
     </owl:Class>
@@ -186,17 +178,12 @@
             <owl:Class>
                 <owl:intersectionOf rdf:parseType="Collection">
                     <owl:Restriction>
-                        <owl:onProperty rdf:resource="https://github.com/EmaroLab/paco/owl/paco#has_first_arg"/>
+                        <owl:onProperty rdf:resource="https://github.com/EmaroLab/paco/owl/paco#has_1st_arg"/>
                         <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
                         <owl:onClass rdf:resource="https://github.com/EmaroLab/paco/owl/paco#Object"/>
                     </owl:Restriction>
                     <owl:Restriction>
-                        <owl:onProperty rdf:resource="https://github.com/EmaroLab/paco/owl/paco#has_second_arg"/>
-                        <owl:maxQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxQualifiedCardinality>
-                        <owl:onClass rdf:resource="https://github.com/EmaroLab/paco/owl/paco#Object"/>
-                    </owl:Restriction>
-                    <owl:Restriction>
-                        <owl:onProperty rdf:resource="https://github.com/EmaroLab/paco/owl/paco#has_third_arg"/>
+                        <owl:onProperty rdf:resource="https://github.com/EmaroLab/paco/owl/paco#has_2nd_arg"/>
                         <owl:maxQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxQualifiedCardinality>
                         <owl:onClass rdf:resource="https://github.com/EmaroLab/paco/owl/paco#Object"/>
                     </owl:Restriction>
@@ -231,7 +218,7 @@
         <owl:equivalentClass>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://github.com/EmaroLab/paco/owl/paco#is_defined_by"/>
-                <owl:someValuesFrom rdf:resource="https://github.com/EmaroLab/paco/owl/paco#Predicate"/>
+                <owl:allValuesFrom rdf:resource="https://github.com/EmaroLab/paco/owl/paco#Predicate"/>
             </owl:Restriction>
         </owl:equivalentClass>
     </owl:Class>
@@ -245,17 +232,16 @@
             <owl:Class>
                 <owl:intersectionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="https://github.com/EmaroLab/paco/owl/paco#Predicate"/>
+                    <owl:Class>
+                        <owl:complementOf rdf:resource="https://github.com/EmaroLab/paco/owl/paco#is-child-of"/>
+                    </owl:Class>
                     <owl:Restriction>
-                        <owl:onProperty rdf:resource="https://github.com/EmaroLab/paco/owl/paco#has_first_arg"/>
-                        <owl:allValuesFrom rdf:resource="https://github.com/EmaroLab/paco/owl/paco#joint"/>
-                    </owl:Restriction>
-                    <owl:Restriction>
-                        <owl:onProperty rdf:resource="https://github.com/EmaroLab/paco/owl/paco#has_second_arg"/>
+                        <owl:onProperty rdf:resource="https://github.com/EmaroLab/paco/owl/paco#has_1st_arg"/>
                         <owl:allValuesFrom rdf:resource="https://github.com/EmaroLab/paco/owl/paco#link"/>
                     </owl:Restriction>
                     <owl:Restriction>
-                        <owl:onProperty rdf:resource="https://github.com/EmaroLab/paco/owl/paco#has_third_arg"/>
-                        <owl:allValuesFrom rdf:resource="https://github.com/EmaroLab/paco/owl/paco#joint"/>
+                        <owl:onProperty rdf:resource="https://github.com/EmaroLab/paco/owl/paco#has_2nd_arg"/>
+                        <owl:allValuesFrom rdf:resource="https://github.com/EmaroLab/paco/owl/paco#link"/>
                     </owl:Restriction>
                 </owl:intersectionOf>
             </owl:Class>
@@ -273,27 +259,19 @@
     
 
 
-    <!-- https://github.com/EmaroLab/paco/owl/paco#angle-before -->
+    <!-- https://github.com/EmaroLab/paco/owl/paco#angle-ord -->
 
-    <owl:Class rdf:about="https://github.com/EmaroLab/paco/owl/paco#angle-before">
+    <owl:Class rdf:about="https://github.com/EmaroLab/paco/owl/paco#angle-ord">
         <owl:equivalentClass>
             <owl:Class>
                 <owl:intersectionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="https://github.com/EmaroLab/paco/owl/paco#Predicate"/>
-                    <owl:Class>
-                        <owl:complementOf>
-                            <owl:Restriction>
-                                <owl:onProperty rdf:resource="https://github.com/EmaroLab/paco/owl/paco#has_third_arg"/>
-                                <owl:someValuesFrom rdf:resource="https://github.com/EmaroLab/paco/owl/paco#Object"/>
-                            </owl:Restriction>
-                        </owl:complementOf>
-                    </owl:Class>
                     <owl:Restriction>
-                        <owl:onProperty rdf:resource="https://github.com/EmaroLab/paco/owl/paco#has_first_arg"/>
+                        <owl:onProperty rdf:resource="https://github.com/EmaroLab/paco/owl/paco#has_1st_arg"/>
                         <owl:allValuesFrom rdf:resource="https://github.com/EmaroLab/paco/owl/paco#angle"/>
                     </owl:Restriction>
                     <owl:Restriction>
-                        <owl:onProperty rdf:resource="https://github.com/EmaroLab/paco/owl/paco#has_second_arg"/>
+                        <owl:onProperty rdf:resource="https://github.com/EmaroLab/paco/owl/paco#has_2nd_arg"/>
                         <owl:allValuesFrom rdf:resource="https://github.com/EmaroLab/paco/owl/paco#angle"/>
                     </owl:Restriction>
                 </owl:intersectionOf>
@@ -304,58 +282,19 @@
     
 
 
-    <!-- https://github.com/EmaroLab/paco/owl/paco#angle-joint -->
+    <!-- https://github.com/EmaroLab/paco/owl/paco#has-angle -->
 
-    <owl:Class rdf:about="https://github.com/EmaroLab/paco/owl/paco#angle-joint">
+    <owl:Class rdf:about="https://github.com/EmaroLab/paco/owl/paco#has-angle">
         <owl:equivalentClass>
             <owl:Class>
                 <owl:intersectionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="https://github.com/EmaroLab/paco/owl/paco#Predicate"/>
-                    <owl:Class>
-                        <owl:complementOf>
-                            <owl:Restriction>
-                                <owl:onProperty rdf:resource="https://github.com/EmaroLab/paco/owl/paco#has_third_arg"/>
-                                <owl:someValuesFrom rdf:resource="https://github.com/EmaroLab/paco/owl/paco#Object"/>
-                            </owl:Restriction>
-                        </owl:complementOf>
-                    </owl:Class>
                     <owl:Restriction>
-                        <owl:onProperty rdf:resource="https://github.com/EmaroLab/paco/owl/paco#has_first_arg"/>
+                        <owl:onProperty rdf:resource="https://github.com/EmaroLab/paco/owl/paco#has_1st_arg"/>
                         <owl:allValuesFrom rdf:resource="https://github.com/EmaroLab/paco/owl/paco#angle"/>
                     </owl:Restriction>
                     <owl:Restriction>
-                        <owl:onProperty rdf:resource="https://github.com/EmaroLab/paco/owl/paco#has_second_arg"/>
-                        <owl:allValuesFrom rdf:resource="https://github.com/EmaroLab/paco/owl/paco#joint"/>
-                    </owl:Restriction>
-                </owl:intersectionOf>
-            </owl:Class>
-        </owl:equivalentClass>
-        <rdfs:subClassOf rdf:resource="https://github.com/EmaroLab/paco/owl/paco#Predicate"/>
-    </owl:Class>
-    
-
-
-    <!-- https://github.com/EmaroLab/paco/owl/paco#connected -->
-
-    <owl:Class rdf:about="https://github.com/EmaroLab/paco/owl/paco#connected">
-        <owl:equivalentClass>
-            <owl:Class>
-                <owl:intersectionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="https://github.com/EmaroLab/paco/owl/paco#Predicate"/>
-                    <owl:Class>
-                        <owl:complementOf>
-                            <owl:Restriction>
-                                <owl:onProperty rdf:resource="https://github.com/EmaroLab/paco/owl/paco#has_third_arg"/>
-                                <owl:someValuesFrom rdf:resource="https://github.com/EmaroLab/paco/owl/paco#joint"/>
-                            </owl:Restriction>
-                        </owl:complementOf>
-                    </owl:Class>
-                    <owl:Restriction>
-                        <owl:onProperty rdf:resource="https://github.com/EmaroLab/paco/owl/paco#has_first_arg"/>
-                        <owl:allValuesFrom rdf:resource="https://github.com/EmaroLab/paco/owl/paco#joint"/>
-                    </owl:Restriction>
-                    <owl:Restriction>
-                        <owl:onProperty rdf:resource="https://github.com/EmaroLab/paco/owl/paco#has_second_arg"/>
+                        <owl:onProperty rdf:resource="https://github.com/EmaroLab/paco/owl/paco#has_2nd_arg"/>
                         <owl:allValuesFrom rdf:resource="https://github.com/EmaroLab/paco/owl/paco#link"/>
                     </owl:Restriction>
                 </owl:intersectionOf>
@@ -366,32 +305,23 @@
     
 
 
-    <!-- https://github.com/EmaroLab/paco/owl/paco#fixed -->
+    <!-- https://github.com/EmaroLab/paco/owl/paco#is-child-of -->
 
-    <owl:Class rdf:about="https://github.com/EmaroLab/paco/owl/paco#fixed">
+    <owl:Class rdf:about="https://github.com/EmaroLab/paco/owl/paco#is-child-of">
         <owl:equivalentClass>
             <owl:Class>
                 <owl:intersectionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="https://github.com/EmaroLab/paco/owl/paco#Predicate"/>
                     <owl:Class>
-                        <owl:complementOf>
-                            <owl:Restriction>
-                                <owl:onProperty rdf:resource="https://github.com/EmaroLab/paco/owl/paco#has_second_arg"/>
-                                <owl:someValuesFrom rdf:resource="https://github.com/EmaroLab/paco/owl/paco#joint"/>
-                            </owl:Restriction>
-                        </owl:complementOf>
-                    </owl:Class>
-                    <owl:Class>
-                        <owl:complementOf>
-                            <owl:Restriction>
-                                <owl:onProperty rdf:resource="https://github.com/EmaroLab/paco/owl/paco#has_third_arg"/>
-                                <owl:someValuesFrom rdf:resource="https://github.com/EmaroLab/paco/owl/paco#Object"/>
-                            </owl:Restriction>
-                        </owl:complementOf>
+                        <owl:complementOf rdf:resource="https://github.com/EmaroLab/paco/owl/paco#affected"/>
                     </owl:Class>
                     <owl:Restriction>
-                        <owl:onProperty rdf:resource="https://github.com/EmaroLab/paco/owl/paco#has_first_arg"/>
-                        <owl:allValuesFrom rdf:resource="https://github.com/EmaroLab/paco/owl/paco#joint"/>
+                        <owl:onProperty rdf:resource="https://github.com/EmaroLab/paco/owl/paco#has_1st_arg"/>
+                        <owl:allValuesFrom rdf:resource="https://github.com/EmaroLab/paco/owl/paco#link"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="https://github.com/EmaroLab/paco/owl/paco#has_2nd_arg"/>
+                        <owl:allValuesFrom rdf:resource="https://github.com/EmaroLab/paco/owl/paco#link"/>
                     </owl:Restriction>
                 </owl:intersectionOf>
             </owl:Class>
@@ -431,7 +361,7 @@
     <!-- https://github.com/EmaroLab/paco/owl/paco#Final_state_instance -->
 
     <owl:NamedIndividual rdf:about="https://github.com/EmaroLab/paco/owl/paco#Final_state_instance">
-        <rdf:type rdf:resource="https://github.com/EmaroLab/paco/owl/paco#State"/>
+        <rdf:type rdf:resource="https://github.com/EmaroLab/paco/owl/paco#Final_state"/>
     </owl:NamedIndividual>
     
 
@@ -456,11 +386,18 @@
     <rdf:Description>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
         <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="https://github.com/EmaroLab/paco/owl/paco#Item"/>
+            <rdf:Description rdf:about="https://github.com/EmaroLab/paco/owl/paco#Planning_problem"/>
+            <rdf:Description rdf:about="https://github.com/EmaroLab/paco/owl/paco#State"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
             <rdf:Description rdf:about="https://github.com/EmaroLab/paco/owl/paco#affected"/>
-            <rdf:Description rdf:about="https://github.com/EmaroLab/paco/owl/paco#angle-before"/>
-            <rdf:Description rdf:about="https://github.com/EmaroLab/paco/owl/paco#angle-joint"/>
-            <rdf:Description rdf:about="https://github.com/EmaroLab/paco/owl/paco#connected"/>
-            <rdf:Description rdf:about="https://github.com/EmaroLab/paco/owl/paco#fixed"/>
+            <rdf:Description rdf:about="https://github.com/EmaroLab/paco/owl/paco#angle-ord"/>
+            <rdf:Description rdf:about="https://github.com/EmaroLab/paco/owl/paco#has-angle"/>
+            <rdf:Description rdf:about="https://github.com/EmaroLab/paco/owl/paco#is-child-of"/>
         </owl:members>
     </rdf:Description>
     <rdf:Description>
@@ -480,9 +417,9 @@
     <rdf:Description>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointProperties"/>
         <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="https://github.com/EmaroLab/paco/owl/paco#has_first_arg"/>
-            <rdf:Description rdf:about="https://github.com/EmaroLab/paco/owl/paco#has_second_arg"/>
-            <rdf:Description rdf:about="https://github.com/EmaroLab/paco/owl/paco#has_third_arg"/>
+            <rdf:Description rdf:about="https://github.com/EmaroLab/paco/owl/paco#item_property"/>
+            <rdf:Description rdf:about="https://github.com/EmaroLab/paco/owl/paco#planning_problem_property"/>
+            <rdf:Description rdf:about="https://github.com/EmaroLab/paco/owl/paco#state_property"/>
         </owl:members>
     </rdf:Description>
     
@@ -496,19 +433,19 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-    <rdf:Description rdf:about="https://github.com/EmaroLab/paco/owl/paco#P">
-        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
-    </rdf:Description>
-    <rdf:Description rdf:about="https://github.com/EmaroLab/paco/owl/paco#R">
+    <rdf:Description rdf:about="https://github.com/EmaroLab/paco/owl/paco#t2">
         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
     </rdf:Description>
     <rdf:Description rdf:about="https://github.com/EmaroLab/paco/owl/paco#t3">
         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
     </rdf:Description>
-    <rdf:Description rdf:about="https://github.com/EmaroLab/paco/owl/paco#t2">
+    <rdf:Description rdf:about="https://github.com/EmaroLab/paco/owl/paco#P">
         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
     </rdf:Description>
     <rdf:Description rdf:about="https://github.com/EmaroLab/paco/owl/paco#t1">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="https://github.com/EmaroLab/paco/owl/paco#R">
         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
     </rdf:Description>
     <rdf:Description>
@@ -521,9 +458,9 @@
                 <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
                 <rdf:first>
                     <rdf:Description>
-                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
-                        <swrl:classPredicate rdf:resource="https://github.com/EmaroLab/paco/owl/paco#angle-joint"/>
-                        <swrl:argument1 rdf:resource="https://github.com/EmaroLab/paco/owl/paco#P"/>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#DifferentIndividualsAtom"/>
+                        <swrl:argument1 rdf:resource="https://github.com/EmaroLab/paco/owl/paco#t2"/>
+                        <swrl:argument2 rdf:resource="https://github.com/EmaroLab/paco/owl/paco#t3"/>
                     </rdf:Description>
                 </rdf:first>
                 <rdf:rest>
@@ -542,9 +479,9 @@
                                 <rdf:first>
                                     <rdf:Description>
                                         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
-                                        <swrl:propertyPredicate rdf:resource="https://github.com/EmaroLab/paco/owl/paco#has_first_arg"/>
-                                        <swrl:argument1 rdf:resource="https://github.com/EmaroLab/paco/owl/paco#R"/>
-                                        <swrl:argument2 rdf:resource="https://github.com/EmaroLab/paco/owl/paco#t3"/>
+                                        <swrl:propertyPredicate rdf:resource="https://github.com/EmaroLab/paco/owl/paco#has_2nd_arg"/>
+                                        <swrl:argument1 rdf:resource="https://github.com/EmaroLab/paco/owl/paco#P"/>
+                                        <swrl:argument2 rdf:resource="https://github.com/EmaroLab/paco/owl/paco#t1"/>
                                     </rdf:Description>
                                 </rdf:first>
                                 <rdf:rest>
@@ -552,9 +489,10 @@
                                         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
                                         <rdf:first>
                                             <rdf:Description>
-                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
-                                                <swrl:classPredicate rdf:resource="https://github.com/EmaroLab/paco/owl/paco#angle-joint"/>
-                                                <swrl:argument1 rdf:resource="https://github.com/EmaroLab/paco/owl/paco#R"/>
+                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                                <swrl:propertyPredicate rdf:resource="https://github.com/EmaroLab/paco/owl/paco#has_1st_arg"/>
+                                                <swrl:argument1 rdf:resource="https://github.com/EmaroLab/paco/owl/paco#P"/>
+                                                <swrl:argument2 rdf:resource="https://github.com/EmaroLab/paco/owl/paco#t2"/>
                                             </rdf:Description>
                                         </rdf:first>
                                         <rdf:rest>
@@ -562,10 +500,9 @@
                                                 <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
                                                 <rdf:first>
                                                     <rdf:Description>
-                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
-                                                        <swrl:propertyPredicate rdf:resource="https://github.com/EmaroLab/paco/owl/paco#has_first_arg"/>
-                                                        <swrl:argument1 rdf:resource="https://github.com/EmaroLab/paco/owl/paco#P"/>
-                                                        <swrl:argument2 rdf:resource="https://github.com/EmaroLab/paco/owl/paco#t2"/>
+                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                                                        <swrl:classPredicate rdf:resource="https://github.com/EmaroLab/paco/owl/paco#Predicate_normative"/>
+                                                        <swrl:argument1 rdf:resource="https://github.com/EmaroLab/paco/owl/paco#R"/>
                                                     </rdf:Description>
                                                 </rdf:first>
                                                 <rdf:rest>
@@ -573,9 +510,10 @@
                                                         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
                                                         <rdf:first>
                                                             <rdf:Description>
-                                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
-                                                                <swrl:classPredicate rdf:resource="https://github.com/EmaroLab/paco/owl/paco#Predicate_normative"/>
+                                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                                                <swrl:propertyPredicate rdf:resource="https://github.com/EmaroLab/paco/owl/paco#has_1st_arg"/>
                                                                 <swrl:argument1 rdf:resource="https://github.com/EmaroLab/paco/owl/paco#R"/>
+                                                                <swrl:argument2 rdf:resource="https://github.com/EmaroLab/paco/owl/paco#t3"/>
                                                             </rdf:Description>
                                                         </rdf:first>
                                                         <rdf:rest>
@@ -583,10 +521,9 @@
                                                                 <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
                                                                 <rdf:first>
                                                                     <rdf:Description>
-                                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
-                                                                        <swrl:propertyPredicate rdf:resource="https://github.com/EmaroLab/paco/owl/paco#has_second_arg"/>
-                                                                        <swrl:argument1 rdf:resource="https://github.com/EmaroLab/paco/owl/paco#R"/>
-                                                                        <swrl:argument2 rdf:resource="https://github.com/EmaroLab/paco/owl/paco#t1"/>
+                                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                                                                        <swrl:classPredicate rdf:resource="https://github.com/EmaroLab/paco/owl/paco#has-angle"/>
+                                                                        <swrl:argument1 rdf:resource="https://github.com/EmaroLab/paco/owl/paco#P"/>
                                                                     </rdf:Description>
                                                                 </rdf:first>
                                                                 <rdf:rest>
@@ -595,8 +532,8 @@
                                                                         <rdf:first>
                                                                             <rdf:Description>
                                                                                 <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
-                                                                                <swrl:propertyPredicate rdf:resource="https://github.com/EmaroLab/paco/owl/paco#has_second_arg"/>
-                                                                                <swrl:argument1 rdf:resource="https://github.com/EmaroLab/paco/owl/paco#P"/>
+                                                                                <swrl:propertyPredicate rdf:resource="https://github.com/EmaroLab/paco/owl/paco#has_2nd_arg"/>
+                                                                                <swrl:argument1 rdf:resource="https://github.com/EmaroLab/paco/owl/paco#R"/>
                                                                                 <swrl:argument2 rdf:resource="https://github.com/EmaroLab/paco/owl/paco#t1"/>
                                                                             </rdf:Description>
                                                                         </rdf:first>
@@ -605,9 +542,9 @@
                                                                                 <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
                                                                                 <rdf:first>
                                                                                     <rdf:Description>
-                                                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#DifferentIndividualsAtom"/>
-                                                                                        <swrl:argument1 rdf:resource="https://github.com/EmaroLab/paco/owl/paco#t2"/>
-                                                                                        <swrl:argument2 rdf:resource="https://github.com/EmaroLab/paco/owl/paco#t3"/>
+                                                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                                                                                        <swrl:classPredicate rdf:resource="https://github.com/EmaroLab/paco/owl/paco#has-angle"/>
+                                                                                        <swrl:argument1 rdf:resource="https://github.com/EmaroLab/paco/owl/paco#R"/>
                                                                                     </rdf:Description>
                                                                                 </rdf:first>
                                                                                 <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>

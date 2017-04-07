@@ -7,17 +7,18 @@
 	<param name="/rosplan/domain_path" value="$(find rosplan_config)/planner/domain.pddl" />
 
 	<!-- ARMOR ontology manager -->
-    <node pkg="armor" type="execute" name="armor_service" args="it.emarolab.armor.ARMORMainService" output="screen"/>
+    <node pkg="armor" type="execute" name="armor_service" args="it.emarolab.armor.ARMORMainService" />
 
 	<!-- knowledge base -->
-	<node name="rosplan_knowledge_base" pkg="rosplan_knowledge_base" type="knowledgeBase" respawn="false" output="screen">
-	</node>
+	<node name="rosplan_knowledge_base" pkg="rosplan_knowledge_base" type="knowledgeBase" respawn="false" />
 
 	<!-- scene database (MongoDB) -->
-	<node name="rosplan_scene_base" pkg="mongodb_store" type="mongodb_server.py" respawn="false" output="screen">
+	<node name="rosplan_scene_base" pkg="mongodb_store" type="mongodb_server.py" respawn="false" >
 	    <param name="database_path" value="$(find rosplan_config)/knowledge_base/mongoDB" />
 	</node>
-	<node name="rosplan_scene_message_store" pkg="mongodb_store" type="message_store_node.py" respawn="false" output="screen">
+	<node name="rosplan_scene_message_store" pkg="mongodb_store" type="message_store_node.py" respawn="false">
 	</node>
 
 </launch>
+
+<!-- output="screen" -->

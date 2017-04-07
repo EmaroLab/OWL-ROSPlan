@@ -20,7 +20,7 @@ namespace KCL_rosplan {
 	/*----------------------*/
 
 	/**
-	 * parses the output of popf, generating a list of action messages.
+	 * parses the output of probe, generating a list of action messages.
 	 */
 	void PlanParser::preparePlan(std::string &dataPath, PlanningEnvironment &environment, size_t freeActionID) {
 

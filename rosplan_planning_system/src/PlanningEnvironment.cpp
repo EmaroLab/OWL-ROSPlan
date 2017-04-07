@@ -231,6 +231,7 @@ namespace KCL_rosplan {
 			
 			if (GetDomainAttrsClient.call(domainAttrSrv)) {
 				for(size_t j=0;j<domainAttrSrv.response.attributes.size();j++) {
+
 					rosplan_knowledge_msgs::KnowledgeItem attr = domainAttrSrv.response.attributes[j];
 					if(attr.knowledge_type == rosplan_knowledge_msgs::KnowledgeItem::FACT && attr.attribute_name.compare(ait->first)==0)
 					{

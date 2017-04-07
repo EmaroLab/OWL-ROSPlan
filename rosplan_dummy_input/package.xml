@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<package>
+  <name>rosplan_dummy_input</name>
+  <version>0.1.0</version>
+  <description>dummy input for onto-rosplan</description>
+  <maintainer email="alessio.capitanelli@dibris.unige.it">Alessio Capitanelli</maintainer>
+  <author email="alessio.capitanelli@dibris.unige.it">Alessio Capitanelli</author>
+
+  <license>GPLv2</license>
+
+  <url type="website">https://github.com/EmaroLab</url>
+
+  <buildtool_depend>catkin</buildtool_depend>+
+  <build_depend>rosplan_knowledge_msgs</build_depend>
+  <build_depend>rosplan_knowledge_base</build_depend>
+  <build_depend>rosplan_planning_system</build_depend>
+  <run_depend>rosplan_knowledge_msgs</run_depend>
+  <run_depend>rosplan_knowledge_base</run_depend>
+  <run_depend>rosplan_planning_system</run_depend>
+
+  <!-- The export tag contains other, unspecified, tags -->
+  <export>
+    <!-- Other tools can request additional information be placed here -->
+
+  </export>
+</package>

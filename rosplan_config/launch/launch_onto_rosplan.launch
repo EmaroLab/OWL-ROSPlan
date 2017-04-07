@@ -1,7 +1,7 @@
 <launch>
     <include file="$(find rosplan_knowledge_base)/launch/rosplan_knowledge_base.launch" />
     <include file="$(find rosplan_planning_system)/launch/planning_system.launch" />
-    <!-- <node name="increase_angle_node" pkg="paco_actions" type="rosplan_action" /> -->
-    <!-- <node name="decrease_angle_node" pkg="paco_actions" type="rosplan_action" /> -->
+    <node name="increase_angle_node" pkg="paco_actions" type="increase_angle_node" />
+    <node name="decrease_angle_node" pkg="paco_actions" type="decrease_angle_node" />
     <node name="rqt_gui" pkg="rqt_gui" type="rqt_gui" />
 </launch>

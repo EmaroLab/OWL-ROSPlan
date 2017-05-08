@@ -12,7 +12,6 @@ namespace KCL_rosplan {
 	 * This file is later read by the planner.
 	 */
 	void PDDLProblemGenerator::generatePDDLProblemFile(PlanningEnvironment &environment, std::string &problemPath) {
-
 		ROS_INFO("KCL: (PS) Generating PDDL problem file %s", problemPath.c_str());
 		std::ofstream pFile;
 		pFile.open((problemPath).c_str());
@@ -48,7 +47,6 @@ namespace KCL_rosplan {
 	/*---------------*/
 
 	void PDDLProblemGenerator::makeInitialState(PlanningEnvironment environment, std::ofstream &pFile) {
-
 		pFile << "(:init" << std::endl;
 
 		// add knowledge to the initial state
@@ -95,7 +93,6 @@ namespace KCL_rosplan {
 			if(environment.domain_attributes[i].knowledge_type == rosplan_knowledge_msgs::KnowledgeItem::FUNCTION) {
 				ss << " " << environment.domain_attributes[i].function_value << ")";
 			};
-
 			if(writeAttribute) pFile << ss.str() << std::endl;
 		}
 
@@ -155,7 +152,9 @@ namespace KCL_rosplan {
 				bool found = false;
 				for(size_t j=0; j<ait->second.size(); j++) {
 				for(size_t k=0; k<environment.goal_attributes[i].values.size(); k++) {
+
 					if(0 == environment.goal_attributes[i].values[k].key.compare(ait->second[j])) {
+
 						ss << " " << environment.goal_attributes[i].values[k].value;
 						found = true;
 					}

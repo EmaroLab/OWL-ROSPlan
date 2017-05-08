@@ -3,7 +3,7 @@
     <!-- params -->
    	<param name="/rosplan/owl_path" value="$(find rosplan_config)/planner/paco.owl" />
    	<param name="/rosplan/iri" value="https://github.com/EmaroLab/paco/owl/paco" />
-    <param name="/armor/settings/show_gui" value="true" />
+    <param name="/armor/settings/show_gui" value="false" />
 	<param name="/rosplan/domain_path" value="$(find rosplan_config)/planner/domain.pddl" />
 
 	<!-- ARMOR ontology manager -->

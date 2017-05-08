@@ -135,7 +135,7 @@ class PlanViewWidget(QWidget):
                 item.setText(goalText)
                 if goal not in resp_active.attributes:
                     item.setBackground(QColor('#7fc97f'))
-                else: ## non ci entra mai
+                else:
                     item.setBackground(QColor('#f97070'))
                 self._goal_list[goalText] = goal
                 if goalText in selected_list:
@@ -179,9 +179,9 @@ class PlanViewWidget(QWidget):
             resp_active = instance_client(typename)
             item = QTreeWidgetItem(self.instanceView)
             item.setText(0, typename)
-            for instancename in resp_active.instances:
+            for instanceName in resp_active.instances:
                 inst = QTreeWidgetItem(item)
-                inst.setText(0, instancename)
+                inst.setText(0, instanceName)
             if typename in expanded_list:
                 item.setExpanded(True)
 
@@ -287,7 +287,7 @@ class PlanViewWidget(QWidget):
     called when the add goal button is clicked
     """
     def _handle_add_button_clicked(self, updateType, predName, combo):
-        args_key_list = ['has_1st_arg', 'has_2nd_arg', 'has_3rd_arg']
+        base_arg_key = 'has_arg_'
         rospy.wait_for_service('/kcl_rosplan/update_knowledge_base')
         try:
             update_client = rospy.ServiceProxy('/kcl_rosplan/update_knowledge_base', KnowledgeUpdateService)
@@ -297,11 +297,8 @@ class PlanViewWidget(QWidget):
             index = 0
             for param in split(combo.currentText()):
                 pair = KeyValue()
-                if index < len(args_key_list):
-                    pair.key = args_key_list[index]
-                else:
-                    pair.key = (self._predicate_param_label_list[knowledge.attribute_name])[index]
                 index = index + 1
+                pair.key = base_arg_key + str(index)
                 pair.value = param
                 knowledge.values.append(pair)
             resp = update_client(updateType, knowledge)

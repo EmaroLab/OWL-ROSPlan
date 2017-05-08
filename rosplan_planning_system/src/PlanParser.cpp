@@ -28,7 +28,7 @@ namespace KCL_rosplan {
 		while(action_list.size() > freeActionID)
 			action_list.pop_back();
 
-		// popf output
+		// probe output
 		std::ifstream planfile;
 		planfile.open((dataPath + "plan.pddl").c_str());
 		
@@ -42,81 +42,74 @@ namespace KCL_rosplan {
 
 			getline(planfile, line);
 
-			if (line.substr(0,6).compare("; Plan") == 0) {
-				expectedPlanDuration = atof(line.substr(25).c_str());
-			} else if (line.substr(0,6).compare("; Time")!=0) {
-				//consume useless lines
-			} else {
+            potentialPlan.clear();
+            size_t planFreeActionID = freeActionID;
+            planDuration = 0;
 
-				potentialPlan.clear();
-				size_t planFreeActionID = freeActionID;
-				planDuration = 0;
+            while(!planfile.eof() && line.compare("")!=0) {
 
-				while(!planfile.eof() && line.compare("")!=0) {
+                getline(planfile, line);
+                if (line.length()<2)
+                    break;
 
-					getline(planfile, line);
-					if (line.length()<2)
-						break;
+                rosplan_dispatch_msgs::ActionDispatch msg;
 
-					rosplan_dispatch_msgs::ActionDispatch msg;
+                // action ID
+                msg.action_id = planFreeActionID;
+                planFreeActionID++;
 
-					// action ID
-					msg.action_id = planFreeActionID;
-					planFreeActionID++;
+                // dispatchTime
+                curr=line.find(":");
+                double dispatchTime = (double)atof(line.substr(0,curr).c_str());
+                msg.dispatch_time = dispatchTime;
 
-					// dispatchTime
-					curr=line.find(":");
-					double dispatchTime = (double)atof(line.substr(0,curr).c_str());
-					msg.dispatch_time = dispatchTime;
+                // check for parameters
+                curr=line.find("(")+1;
+                bool paramsExist = (line.find(" ",curr) < line.find(")",curr));
 
-					// check for parameters
-					curr=line.find("(")+1;
-					bool paramsExist = (line.find(" ",curr) < line.find(")",curr));
+                if(paramsExist) {
 
-					if(paramsExist) {
+                    // name
+                    next=line.find(" ",curr);
+                    std::string name = line.substr(curr,next-curr).c_str();
+                    msg.name = name;
 
-						// name
-						next=line.find(" ",curr);
-						std::string name = line.substr(curr,next-curr).c_str();
-						msg.name = name;
-
-						// parameters
-						std::vector<std::string> params;
-						curr=next+1;
-						next=line.find(")",curr);
-						int at = curr;
-						while(at < next) {
-							int cc = line.find(" ",curr);
-							int cc1 = line.find(")",curr);
-							curr = cc<cc1?cc:cc1;
-							std::string param = environment.name_map[line.substr(at,curr-at)];
-							params.push_back(param);
-							++curr;
-							at = curr;
-						}
-						processPDDLParameters(msg, params, environment);
+                    // parameters
+                    std::vector<std::string> params;
+                    curr=next+1;
+                    next=line.find(")",curr);
+                    int at = curr;
+                    while(at < next) {
+                        int cc = line.find(" ",curr);
+                        int cc1 = line.find(")",curr);
+                        curr = cc<cc1?cc:cc1;
+                        std::string param = environment.name_map[line.substr(at,curr-at)];
+                        params.push_back(param);
+                        ++curr;
+                        at = curr;
+                    }
+                    processPDDLParameters(msg, params, environment);
 
 
-					} else {
+                } else {
 
-						// name
-						next=line.find(")",curr);
-						std::string name = line.substr(curr,next-curr).c_str();
-						msg.name = name;
+                    // name
+                    next=line.find(")",curr);
+                    std::string name = line.substr(curr,next-curr).c_str();
+                    msg.name = name;
 
-					}
+                }
 
-					// duration
-					curr=line.find("[",curr)+1;
-					next=line.find("]",curr);
-					msg.duration = (double)atof(line.substr(curr,next-curr).c_str());
+                // duration
+                curr=line.find("[",curr)+1;
+                next=line.find("]",curr);
+                msg.duration = (double)atof(line.substr(curr,next-curr).c_str());
 
-					potentialPlan.push_back(msg);
+                potentialPlan.push_back(msg);
 
-					// update plan duration
-					curr=line.find(":");
-					planDuration = msg.duration + atof(line.substr(0,curr).c_str());
-				}
+                // update plan duration
+                curr=line.find(":");
+                planDuration = msg.duration + atof(line.substr(0,curr).c_str());
 
 				if(planDuration - expectedPlanDuration < 0.01)  {
 

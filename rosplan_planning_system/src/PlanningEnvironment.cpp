@@ -86,7 +86,9 @@ namespace KCL_rosplan {
 					// parameters
 					for (VAL::var_symbol_list::const_iterator vi = predicate->getArgs()->begin(); vi != predicate->getArgs()->end(); vi++) {
 						const VAL::var_symbol* var = *vi;
-						domain_predicates[predicate->getPred()->symbol::getName()].push_back(var->pddl_typed_symbol::getName());
+						// TODO here lies the error
+                        int arg_num = (int)std::distance(predicate->getArgs()->begin(), vi);
+						domain_predicates[predicate->getPred()->symbol::getName()].push_back("has_arg_" + std::to_string(arg_num + 1));
 					}
 				}
 			}

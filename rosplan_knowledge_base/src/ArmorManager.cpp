@@ -76,7 +76,7 @@ namespace KCL_rosplan{
             }
             // assign arguments
             for (size_t i = 0; i < params.size(); i++){
-                req = newMessage("ADD", "OBJECTPROP", "IND", {argsProperties[i], predicateId, params[i]});
+                req = newMessage("ADD", "OBJECTPROP", "IND", {getArgProperty((int)i + 1), predicateId, params[i]});
                 if (!armorClient.call(req, res)) return "";
             }
             applyChanges();
@@ -97,12 +97,12 @@ namespace KCL_rosplan{
         return armorClient.call(req, res) && applyChanges();
     }
 
-    std::string ArmorManager::addFact(std::string predicateName, rosplan_knowledge_msgs::KnowledgeItem msg) {
-        return addPredicate(predicateName, msg, false);
+    std::string ArmorManager::addFact(rosplan_knowledge_msgs::KnowledgeItem msg) {
+        return addPredicate(msg.attribute_name, msg, false);
     }
 
-    std::string ArmorManager::addNorm(std::string predicateName, rosplan_knowledge_msgs::KnowledgeItem msg) {
-        return addPredicate(predicateName, msg, true);
+    std::string ArmorManager::addNorm(rosplan_knowledge_msgs::KnowledgeItem msg) {
+        return addPredicate(msg.attribute_name, msg, true);
     }
 
     std::vector<rosplan_knowledge_msgs::KnowledgeItem> ArmorManager::getCurrentGoals(){
@@ -129,10 +129,13 @@ namespace KCL_rosplan{
                     goal.attribute_name = tmpName.erase(goalsIt->rfind("_")).c_str();
                     goal.values.clear();
                     std::vector<std::string>::iterator argsIt;
+                    // sort to ensure queried args are in the right order
+                    std::sort(tmpRes1.armor_response.queried_objects.begin(),
+                              tmpRes1.armor_response.queried_objects.end());
                     for (argsIt = tmpRes1.armor_response.queried_objects.begin();
                          argsIt!= tmpRes1.armor_response.queried_objects.end(); argsIt++){
                         //filter out irrelevant or inferred properties
-                        if (std::find(argsProperties.begin(), argsProperties.end(), *argsIt) != argsProperties.end()) {
+                        if ((*argsIt).find(this->baseArgPropertyName) != std::string::npos) {
                             armor_msgs::ArmorDirectiveResponse tmpRes2;
                             req = newMessage("QUERY", "OBJECTPROP", "IND", {*argsIt, *goalsIt});
                             if (armorClient.call(req, tmpRes2) && tmpRes2.armor_response.success
@@ -197,5 +200,9 @@ namespace KCL_rosplan{
         armor_msgs::ArmorDirectiveRequest req = newMessage("UNMOUNT", "", "", {});
         armor_msgs::ArmorDirectiveResponse res;
         return armorClient.call(req, res) && res.armor_response.success;
+    }
+
+    std::string ArmorManager::getArgProperty(int propNumber){
+        return this->baseArgPropertyName + std::to_string(propNumber);
     }
 }

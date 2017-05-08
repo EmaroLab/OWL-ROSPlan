@@ -20,7 +20,7 @@ namespace KCL_rosplan {
         ros::ServiceClient armorClientSerial;
         armor_msgs::ArmorDirectiveRequest msgTemplate;
         int maxId = 0;
-        std::vector<std::string> argsProperties = {"has_1st_arg", "has_2nd_arg", "has_3rd_arg"};
+        std::string baseArgPropertyName = "has_arg_";
 
         void setMsgDirective(armor_msgs::ArmorDirectiveRequest& msg, std::string command,
                              std::string primarySpec, std::string secondarySpec);
@@ -43,14 +43,15 @@ namespace KCL_rosplan {
         bool pollDomainOntology();
         std::string getRefName();
         bool addInstance(std::string type, std::string name);
-        std::string addFact(std::string predicateName, rosplan_knowledge_msgs::KnowledgeItem msg);
-        std::string addNorm(std::string predicateName, rosplan_knowledge_msgs::KnowledgeItem msg);
+        std::string addFact(rosplan_knowledge_msgs::KnowledgeItem msg);
+        std::string addNorm(rosplan_knowledge_msgs::KnowledgeItem msg);
         bool removeEntity(std::string entityName);
         bool clearClass(std::string className);
         std::vector<rosplan_knowledge_msgs::KnowledgeItem> getCurrentGoals();
         bool loadOntology(std::string path, std::string iri);
         bool mountOnOntology();
         bool unmountFromOntology();
+        std::string getArgProperty(int propNumber);
 
     };
 

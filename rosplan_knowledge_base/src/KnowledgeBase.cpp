@@ -190,16 +190,13 @@ namespace KCL_rosplan {
 		bool changed = false;
         // TODO maybe to comment
 		std::vector<rosplan_knowledge_msgs::KnowledgeItem>::iterator git;
-		ROS_ERROR("che schifo dio");
 		for(git=model_goals.begin(); git!=model_goals.end(); git++) {
-			ROS_ERROR("sempre sia schifato");
 			if(KnowledgeComparitor::containsKnowledge(msg, *git)) {
 				ROS_INFO("KCL: (KB) Removing goal (%s)", msg.attribute_name.c_str());
 
                 // erase norms from ontology
                 long index = git - model_goals.begin();
 
-                ROS_ERROR(model_norms_ontonames[index].c_str());
                 armorManager->removeEntity(model_norms_ontonames[index]);
                 model_norms_ontonames.erase(model_norms_ontonames.begin() + index);
 
@@ -242,7 +239,6 @@ namespace KCL_rosplan {
 			}
 
 		} else if(msg.knowledge_type == rosplan_knowledge_msgs::KnowledgeItem::FACT) {
-
 			// add domain attribute
 			std::vector<rosplan_knowledge_msgs::KnowledgeItem>::iterator pit;
 			for(pit=model_facts.begin(); pit!=model_facts.end(); pit++) {
@@ -252,7 +248,7 @@ namespace KCL_rosplan {
 			}
 			ROS_INFO("KCL: (KB) Adding domain attribute (%s)", msg.attribute_name.c_str());
 			model_facts.push_back(msg);
-			std::string predicateName = armorManager->addFact(msg.attribute_name, msg);
+			std::string predicateName = armorManager->addFact(msg);
             model_facts_ontonames.push_back(predicateName); //saves the name used in ontology so it is easier to remove it
 			plan_filter.checkFilters(msg, true);
 
@@ -286,7 +282,7 @@ namespace KCL_rosplan {
 		}
 		ROS_INFO("KCL: (KB) Adding mission goal (%s)", msg.attribute_name.c_str());
 		model_goals.push_back(msg);
-        std::string predicateName = armorManager->addNorm(msg.attribute_name, msg);
+        std::string predicateName = armorManager->addNorm(msg);
         model_norms_ontonames.push_back(predicateName); //saves the name used in ontology so it is easier to remove it
 	}
 
@@ -375,10 +371,12 @@ namespace KCL_rosplan {
 				formula.name = predicate->getPred()->symbol::getName();
 
 				// predicate variables
+                int propNumber = 1;
 				for (VAL::var_symbol_list::const_iterator vi = predicate->getArgs()->begin(); vi != predicate->getArgs()->end(); vi++) {
 					const VAL::var_symbol* var = *vi;
 					diagnostic_msgs::KeyValue param;
-					param.key = var->pddl_typed_symbol::getName();
+					//param.key = var->pddl_typed_symbol::getName();
+                    param.key = armorManager->getArgProperty(propNumber++);
 					param.value = var->type->getName();
 					formula.typed_parameters.push_back(param);
 				}

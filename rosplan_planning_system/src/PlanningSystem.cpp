@@ -14,7 +14,7 @@ namespace KCL_rosplan {
 
 	PlanningSystem::PlanningSystem(ros::NodeHandle& nh)
 		: system_status(READY),
-		  plan_parser(new POPFEsterelPlanParser(nh)),
+		  plan_parser(new ProbePlanParser(nh)),
 		  plan_server(new actionlib::SimpleActionServer<rosplan_dispatch_msgs::PlanAction>(nh_, "/kcl_rosplan/start_planning", boost::bind(&PlanningSystem::runPlanningServerAction, this, _1), false))
 	{
 		// dispatcher
@@ -388,7 +388,7 @@ namespace KCL_rosplan {
 
 	/**
 	 * passes the problem to the Planner; the plan to post-processing.
-	 * This method is popf-specific.
+	 * This method is probe-specific.
 	 */
 	bool PlanningSystem::runPlanner() {
 
@@ -400,42 +400,34 @@ namespace KCL_rosplan {
 		}
 
 		// run the planner
-		std::string str = planner_command;
-		std::size_t dit = str.find("DOMAIN");
-		if(dit!=std::string::npos) str.replace(dit,6,domain_path);
-		std::size_t pit = str.find("PROBLEM");
-		if(pit!=std::string::npos) str.replace(pit,7,problem_path);
-		
-		std::string commandString = str + " > " + data_path + "plan.pddl";
+		std::string commandString = planner_command;
+		std::size_t dit = commandString.find("DOMAIN");
+		if(dit!=std::string::npos) commandString.replace(dit,6,domain_path);
+		std::size_t pit = commandString.find("PROBLEM");
+		if(pit!=std::string::npos) commandString.replace(pit,7,problem_path);
+
 		ROS_INFO("KCL: (PS) (%s) Running: %s", problem_name.c_str(),  commandString.c_str());
 		std::string plan = runCommand(commandString.c_str());
 		ROS_INFO("KCL: (PS) (%s) Planning complete", problem_name.c_str());
 
 		// check the planner solved the problem (TODO standardised PDDL2.1 output)
 		std::ifstream planfile;
-		planfile.open((data_path + "plan.pddl").c_str());
+		planfile.open((data_path + "plan_report").c_str());
 		std::string line;
-		bool solved = false;
+		bool solved = true;
 		
-		while(!planfile.eof() && !solved) {
-			getline(planfile, line);
-			if (line.find("; Plan found", 0) != std::string::npos)
-				solved = true;
-			if (line.find("ff: found legal plan as follows", 0) != std::string::npos)
-				solved = true;
-		}
-		if(!solved) {
-				planfile.close();
-				ROS_INFO("KCL: (PS) (%s) Plan was unsolvable! Try again?", problem_name.c_str());
-				return false;
-		}
+		while(!planfile.eof() && solved) {
+            getline(planfile, line);
+            if (line.find("ff: goal can be simplified to FALSE. No plan will solve it", 0) != std::string::npos)
+                solved = false;
+        }
 
 		// save file
 		std::stringstream ss;
 		ss << planning_attempts;
 		std::ifstream source;
 		std::ofstream dest;
-		source.open((data_path + "plan.pddl").c_str());
+		source.open((data_path + "plan.1").c_str());
 		dest.open((data_path + "plan_" + ss.str()).c_str());
 		dest << source.rdbuf();
 		source.close();

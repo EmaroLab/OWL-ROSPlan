@@ -11,8 +11,7 @@
 		<param name="/strl_file_path" value="$(find rosplan_config)/planner/plan.strl" />
 
 		<!-- to run the planner -->
-		<param name="/planner_command" value="timeout 10 $(find rosplan_config)/planner/bin/popf -n DOMAIN PROBLEM" />
-		<!-- <param name="/rosplan/planner_command" value="timeout 10 $(find rosplan_config)/planner/bin/probe -d DOMAIN -i PROBLEM -o $(find rosplan_planning_system)/common/plan.ppdl" /> -->
+		<param name="/planner_command" value="timeout 10 $(find rosplan_config)/planner/bin/probe -d DOMAIN -i PROBLEM -o $(find rosplan_config)/planner/plan > $(find rosplan_config)/planner/plan_report" />
 		<param name="/generate_default_problem" value="true" />
 		<param name="/max_dispatch_attempts" value="2" />
 	</node>

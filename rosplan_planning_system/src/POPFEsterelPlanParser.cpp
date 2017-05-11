@@ -224,7 +224,7 @@ namespace KCL_rosplan {
 
 			std::getline(infile, line);
 			toLowerCase(line);
-			
+
 			if (line.substr(0,6).compare("; plan") == 0) {
 
 				// prepare plan
@@ -251,7 +251,7 @@ namespace KCL_rosplan {
 					std::getline(infile, line);
 					toLowerCase(line);
 
-					// 0.000: (goto_waypoint kenny wp0 wp1)  [10.000]					
+					// 0.000: (goto_waypoint kenny wp0 wp1)  [10.000]
 					if (line.length()<2)
 						break;
 

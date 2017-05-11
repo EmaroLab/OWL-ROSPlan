@@ -4,6 +4,7 @@
  */
 #include <string>
 #include "rosplan_dispatch_msgs/ActionDispatch.h"
+#include <rosplan_knowledge_msgs/KnowledgeUpdateService.h>
 #include "rosplan_knowledge_msgs/Notification.h"
 #include "rosplan_knowledge_msgs/Filter.h"
 #include "PlanningEnvironment.h"
@@ -14,11 +15,17 @@
 
 namespace KCL_rosplan {
 
-	class POPFPlanParser: public PlanParser
+	class ProbePlanParser: public PlanParser
 	{
 	private:
 
-		/* plan knowledge filter */
+		// ROS node handle.
+		ros::NodeHandle* node_handle;
+
+        // Knowledge base
+        ros::ServiceClient update_knowledge_client;
+
+        /* plan knowledge filter */
 		std::vector<std::string> filter_objects;
 		std::vector<std::vector<std::string> > filter_attributes;
 
@@ -27,7 +34,8 @@ namespace KCL_rosplan {
 
 	public:
 
-		virtual ~POPFPlanParser();
+        /* constructor */
+        ProbePlanParser(ros::NodeHandle &nh);
 
 		/* post process plan */
 		double total_plan_duration;

@@ -4,4 +4,5 @@
     <node name="increase_angle_node" pkg="paco_actions" type="increase_angle_node" />
     <node name="decrease_angle_node" pkg="paco_actions" type="decrease_angle_node" />
     <node name="rqt_gui" pkg="rqt_gui" type="rqt_gui" />
+    <node name="rosplan_dummy_input" pkg="rosplan_dummy_input" type="dummy_input_node.py" />
 </launch>

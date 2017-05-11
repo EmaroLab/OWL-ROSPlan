@@ -1,0 +1,17 @@
+
+
+task contains conditional effects. turning off state domination.
+
+ --- OK.
+Fluents=14
+Operators=123
+
+================================================
+;; PROBE searching...
+================================================
+[0] [1] 
+================================================
+;; SOLUTION 1
+;;	 Plan cost: 2.000000, steps: 2
+;;	 Time: <1 msec
+================================================

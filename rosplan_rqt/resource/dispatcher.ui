@@ -128,12 +128,12 @@
       </column>
       <column>
        <property name="text">
-        <string>duration</string>
+        <string>status</string>
        </property>
       </column>
       <column>
        <property name="text">
-        <string>status</string>
+        <string>duration</string>
        </property>
       </column>
      </widget>

@@ -16,12 +16,13 @@ from rosplan_knowledge_msgs.msg import *
 
 from python_qt_binding import loadUi
 from python_qt_binding.QtCore import Qt, QTimer, Signal, Slot
-from python_qt_binding.QtGui import QHeaderView, QIcon, QTreeWidgetItem, QListWidgetItem, QWidget, QColor
+from python_qt_binding.QtGui import QHeaderView, QIcon, QTreeWidgetItem, QListWidgetItem, QWidget, QColor, QPalette, QBrush
+
 
 class PlanViewWidget(QWidget):
 
     # plan view
-    _column_names = ['action_id', 'dispatch_time', 'action_name', 'duration', 'status']
+    _column_names = ['action_id', 'dispatch_time', 'action_name', 'status', 'duration']
     _action_list = []
     _status_list = {}
     _predicate_param_type_list = {}
@@ -103,6 +104,21 @@ class PlanViewWidget(QWidget):
         rospy.Subscriber("/kcl_rosplan/action_feedback", ActionFeedback, self.action_feedback_callback)
         rospy.Subscriber("/kcl_rosplan/system_state", String, self.system_status_callback)
 
+        # set view colors
+        palette = self.planView.palette()
+        palette.setBrush(QPalette.Base, QBrush())
+        self.planView.setPalette(palette)
+
+        palette = self.goalView.palette()
+        palette.setBrush(QPalette.Base, QBrush())
+        self.goalView.setPalette(palette)
+
+        self.instanceView.setAlternatingRowColors(True)
+        self.instanceView.setStyleSheet("alternate-background-color: #ffe394;background-color: #ffedbb;")
+
+        self.modelView.setAlternatingRowColors(True)
+        self.modelView.setStyleSheet("alternate-background-color: #c7d0ff;background-color: #d0e1ff;")
+
         self.refresh_model()
 
     def start(self):
@@ -159,7 +175,6 @@ class PlanViewWidget(QWidget):
                      attributeText = attributeText + ' ' + keyval.value
                 attributeText = attributeText + ')'
                 item.setText(attributeText)
-                item.setBackground(QColor('#a3a3ff'))
                 self._fact_list[attributeText] = attribute
                 if attributeText in selected_list:
                     item.setSelected(True)
@@ -185,6 +200,7 @@ class PlanViewWidget(QWidget):
             if typename in expanded_list:
                 item.setExpanded(True)
 
+
     """
     updating plan view
     """
@@ -201,8 +217,19 @@ class PlanViewWidget(QWidget):
             item = QTreeWidgetItem(self.planView)
             item.setText(self._column_index['action_id'], str(action.action_id))
             item.setText(self._column_index['dispatch_time'], str(action.dispatch_time))
+            item.setText(self._column_index['status'], self._status_list.get(str(action.action_id), "-"))
             item.setText(self._column_index['duration'], str(action.duration))
-            item.setText(self._column_index['status'], self._status_list.get(str(action.action_id),"-"))
+
+            if self._status_list.get(str(action.action_id), "-") == 'action enabled':
+                item.setBackground(2, QColor('#8094ff'))
+                item.setBackground(3, QColor('#8094ff'))
+            elif self._status_list.get(str(action.action_id), "-") == 'action achieved':
+                item.setBackground(2, QColor('#7fc97f'))
+                item.setBackground(3, QColor('#7fc97f'))
+            elif self._status_list.get(str(action.action_id), "-") == 'precondition false':
+                item.setBackground(2, QColor('#f97070'))
+                item.setBackground(3, QColor('#f97070'))
+
             action_name = '(' + action.name
             for keyval in action.parameters:
                 param = QTreeWidgetItem(item)

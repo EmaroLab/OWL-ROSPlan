@@ -18,7 +18,7 @@ namespace KCL_rosplan {
 		  plan_server(new actionlib::SimpleActionServer<rosplan_dispatch_msgs::PlanAction>(nh_, "/kcl_rosplan/start_planning", boost::bind(&PlanningSystem::runPlanningServerAction, this, _1), false))
 	{
 		// dispatcher
-		plan_dispatcher = new EsterelPlanDispatcher(*dynamic_cast<POPFEsterelPlanParser*>(plan_parser));
+		plan_dispatcher = new SimplePlanDispatcher();
 
 		// publishing system_state
 		state_publisher = nh.advertise<std_msgs::String>("/kcl_rosplan/system_state", 5, true);
@@ -366,6 +366,7 @@ namespace KCL_rosplan {
 			state_publisher.publish(statusMsg);
 			plan_start_time = ros::WallTime::now().toSec();
 			planSucceeded = plan_dispatcher->dispatchPlan(plan_parser->action_list, mission_start_time, plan_start_time);
+
 			
 			if (!planSucceeded) {
 				ROS_INFO("KCL: (PS) (%s) The plan failed!", problem_name.c_str());

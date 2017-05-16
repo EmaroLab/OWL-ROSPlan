@@ -45,7 +45,7 @@ namespace KCL_rosplan {
 
 			// cancel plan
 			if(plan_cancelled) {
-				break;
+				breakbreak;
 			}
 
 			// get next action

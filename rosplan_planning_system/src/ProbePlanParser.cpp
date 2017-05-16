@@ -38,96 +38,94 @@ namespace KCL_rosplan {
 		double planDuration;
 		double expectedPlanDuration = 0;
 
+		size_t planFreeActionID = freeActionID;
+
 		while(!planfile.eof()) {
 
 			// TODO implement duration
-			expectedPlanDuration = 0;
 
-            potentialPlan.clear();
-            size_t planFreeActionID = freeActionID;
-            planDuration = 0;
+			planDuration = 0;
 
-            getline(planfile, line);
-            std::transform(line.begin(), line.end(), line.begin(), ::tolower);
-            // TODO parse args not working
-            if (line.length()<2)
-                break;
+			getline(planfile, line);
+			std::transform(line.begin(), line.end(), line.begin(), ::tolower);
 
-            rosplan_dispatch_msgs::ActionDispatch msg;
+			if (line.length() < 2)
+				break;
 
-            // action ID
-            msg.action_id = planFreeActionID;
-            planFreeActionID++;
+			rosplan_dispatch_msgs::ActionDispatch msg;
 
-            // dispatchTime
-            msg.dispatch_time = 0;
+			// action ID
+			msg.action_id = planFreeActionID++;
 
-            // check for parameters
-            curr=line.find("(")+1;
-            bool paramsExist = (line.find(" ",curr) < line.find(")",curr));
+			// dispatchTime
+			msg.dispatch_time = 0;
 
-            if(paramsExist) {
+			// check for parameters
+			curr = line.find("(") + 1;
+			bool paramsExist = (line.find(" ", curr) < line.find(")", curr));
 
-                // name
-                next=line.find(" ",curr);
-                std::string name = line.substr(curr,next-curr).c_str();
-                msg.name = name;
+			if (paramsExist) {
 
-                // parameters
-                std::vector<std::string> params;
-                curr = next + 1;
-                next = line.find(")",curr);
-                int at = curr;
-                while(at < next) {
-                    int cc = line.find(" ",curr);
-                    int cc1 = line.find(")",curr);
-                    curr = cc<cc1?cc:cc1;
-                    std::string param = environment.name_map[line.substr(at,curr-at)];
-                        ROS_ERROR(line.substr(at,curr-at).c_str());
-//                        ROS_ERROR(param.c_str());
-                    params.push_back(param);
-                    ++curr;
-                    at = curr;
-                }
-                processPDDLParameters(msg, params, environment);
+				// name
+				next = line.find(" ", curr);
+				std::string name = line.substr(curr, next - curr).c_str();
+				msg.name = name;
 
+				// parameters
+				std::vector<std::string> params;
+				curr = next + 1;
+				next = line.find(")", curr);
+				int param_begin = curr;
+				while (param_begin < next) {
+					int param_end = line.find(" ", curr);
+					int line_end = line.find(")", curr);
+					curr = (param_end < line_end && param_end != -1) ? param_end : line_end;
+					std::string plan_param = line.substr(param_begin, curr - param_begin);
+					std::transform(plan_param.begin(), plan_param.end(), plan_param.begin(), ::tolower);
+					std::string param = environment.name_map[plan_param];
+					params.push_back(param);
+					param_begin = ++curr;
+				}
+				processPDDLParameters(msg, params, environment);
 
-            } else {
+			} else {
 
-                // name
-                next=line.find(")",curr);
-                std::string name = line.substr(curr,next-curr).c_str();
-                msg.name = name;
+				// name
+				next = line.find(")", curr);
+				std::string name = line.substr(curr, next - curr).c_str();
+				msg.name = name;
 
-            }
+			}
 
-            // duration
-            msg.duration = 0;
+			// duration
+			msg.duration = 0;
 
-            potentialPlan.push_back(msg);
+			potentialPlan.push_back(msg);
 
-            // update plan duration
-            planDuration = msg.duration + 0;
+			// update plan duration
+			planDuration = msg.duration + 0;
 
-            if(planDuration - expectedPlanDuration < 0.01)  {
-
-                // trim any previously read plan
-                while(action_list.size() > freeActionID) {
-                    action_list.pop_back();
-                }
-
-                // save better optimised plan
-                for(size_t i=0;i<potentialPlan.size();i++) {
-                    action_list.push_back(potentialPlan[i]);
-                    generateFilter(environment);
-                }
-
-                total_plan_duration = planDuration;
-
-            } else {
-                ROS_INFO("Duration: %f, expected %f; plan discarded", planDuration, expectedPlanDuration);
-            }
 		}
+
+		if(planDuration - expectedPlanDuration < 0.01)  {
+
+			// trim any previously read plan
+			while(action_list.size() > freeActionID) {
+				action_list.pop_back();
+			}
+
+			// save better optimised plan
+			for(size_t i = 0; i < potentialPlan.size(); i++) {
+				action_list.push_back(potentialPlan[i]);
+				generateFilter(environment);
+			}
+
+			total_plan_duration = planDuration;
+
+		} else {
+			ROS_INFO("Duration: %f, expected %f; plan discarded", planDuration, expectedPlanDuration);
+		}
+
 		planfile.close();
 	}
 

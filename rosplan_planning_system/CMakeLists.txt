@@ -81,12 +81,14 @@ set(PLANNING_SOURCES
 	src/PlanningSystem.cpp
 	src/SimplePlanDispatcher.cpp
 	src/EsterelPlanDispatcher.cpp
-		src/ProbePlanParser.cpp
+	src/ProbePlanParser.cpp
 	src/CFFPlanParser.cpp
 	src/POPFEsterelPlanParser.cpp
 	src/PDDLProblemGenerator.cpp
 	src/PlanningEnvironment.cpp
-	src/EsterelPlan.cpp)
+	src/EsterelPlan.cpp
+	src/ProbePlanParser.cpp
+		)
 
 ## Declare cpp executables
 add_executable(planner ${PLANNING_SOURCES} ${VAL_SOURCES})

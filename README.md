@@ -47,7 +47,7 @@ You can also communicate directly with the ARMOR framework, this allows you to s
 
 ## Installation
 
-To run OWL-ROSPlan, you need the following dependencies:
+To run OWL-ROSPlan, you need to install first the following ROS modules:
 
 + Install [rosjava](http://wiki.ros.org/rosjava/Tutorials/indigo/Installation)
 
@@ -58,6 +58,8 @@ To run OWL-ROSPlan, you need the following dependencies:
 + [AMOR](https://github.com/EmaroLab/multi_ontology_reference), a ROS-ready java library for ontology management
 + [ARMOR](https://github.com/EmaroLab/armor), a framework for OWL ontologies manipulation and querying in ROS
 + [armor_msgs](https://github.com/EmaroLab/armor_msgs)
+
+Then, install the following dependencies
 
 (for Indigo)
 ```sh

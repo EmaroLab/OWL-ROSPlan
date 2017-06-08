@@ -78,7 +78,7 @@ git clone https://github.com/EmaroLab/ROSPlan
 ```
 Compile everything:
 ```sh
-source /opt/ros/hydro/setup.bash
+source /opt/ros/indigo/setup.bash
 catkin_make
 ```
 

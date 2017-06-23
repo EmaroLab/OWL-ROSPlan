@@ -54,6 +54,28 @@ namespace KCL_rosplan {
 		return true;
 	}
 
+	/*--------------------*/
+	/* adding constraints */
+	/*--------------------*/
+
+	bool KnowledgeBase::updateKnowledgeConstraintsOneOf(rosplan_knowledge_msgs::KnowledgeUpdateServiceArray::Request  &req, rosplan_knowledge_msgs::KnowledgeUpdateServiceArray::Response &res) {
+
+		int count = 0;
+		for(int i=0;i<req.knowledge.size();i++) {
+			// check if fact is true
+			std::vector<rosplan_knowledge_msgs::KnowledgeItem>::iterator pit;
+			for(pit=model_facts.begin(); pit!=model_facts.end(); pit++) {
+				if(KnowledgeComparitor::containsKnowledge(req.knowledge[i], *pit)) {
+					count++;
+				}
+			}
+		}
+		if(count>1)	ROS_ERROR("KCL: (KB) Warning: more than one Knowledge Item is true in new OneOf constraint!");
+		model_oneof_constraints.push_back(req.knowledge);
+		res.success = true;
+		return true;
+	}
+
 	/*------------------*/
 	/* knowledge update */
 	/*------------------*/
@@ -103,14 +125,15 @@ namespace KCL_rosplan {
 				std::string name = *iit;
 
 				if(name.compare(msg.instance_name)==0 || msg.instance_name.compare("")==0) {
+
 					// remove instance from knowledge base
 					ROS_INFO("KCL: (KB) Removing instance (%s, %s)", msg.instance_type.c_str(), (msg.instance_name.compare("")==0) ? "ALL" : msg.instance_name.c_str());
 					iit = model_instances[msg.instance_type].erase(iit);
 					if(iit!=model_instances[msg.instance_type].begin()) iit--;
 					plan_filter.checkFilters(msg, false);
-                    // remove instance from ontology
-                    // affected attributes are automatically deleted by the reasoner
-                    armorManager->removeEntity(msg.instance_name);
+					// remove instance from ontology
+			                // affected attributes are automatically deleted by the reasoner
+					armorManager->removeEntity(msg.instance_name);
 
 					// remove affected domain attributes
 					std::vector<rosplan_knowledge_msgs::KnowledgeItem>::iterator pit;
@@ -153,11 +176,11 @@ namespace KCL_rosplan {
 					plan_filter.checkFilters(msg, false);
 					pit = model_facts.erase(pit);
 
-                    // erase predicate from ontology
-                    long index = pit - model_facts.begin();
-                    armorManager->removeEntity(model_facts_ontonames[index]);
-                    model_facts_ontonames.erase(model_facts_ontonames.begin() + index);
-
+				    // erase predicate from ontology
+				    long index = pit - model_facts.begin();
+			        armorManager->removeEntity(model_facts_ontonames[index]);
+			        model_facts_ontonames.erase(model_facts_ontonames.begin() + index);
+ 
 					if(pit!=model_facts.begin()) pit--;
 					if(pit==model_facts.end()) break;
 				}
@@ -178,8 +201,8 @@ namespace KCL_rosplan {
 		model_functions.clear();
 		model_goals.clear();
 
-        // clear ontology
-        return armorManager->clearClass("Item");
+		// clear ontology
+		return armorManager->clearClass("Item");
 	}
 
 	/**
@@ -194,14 +217,14 @@ namespace KCL_rosplan {
 			if(KnowledgeComparitor::containsKnowledge(msg, *git)) {
 				ROS_INFO("KCL: (KB) Removing goal (%s)", msg.attribute_name.c_str());
 
-                // erase norms from ontology
-                long index = git - model_goals.begin();
+				// erase norms from ontology
+				long index = git - model_goals.begin();
 
-                armorManager->removeEntity(model_norms_ontonames[index]);
-                model_norms_ontonames.erase(model_norms_ontonames.begin() + index);
+				armorManager->removeEntity(model_norms_ontonames[index]);
+				model_norms_ontonames.erase(model_norms_ontonames.begin() + index);
 
-                // erase from ROSPlan
-                git = model_goals.erase(git);
+				// erase from ROSPlan
+				git = model_goals.erase(git);
 				if(git!=model_goals.begin()) git--;
 				if(git==model_goals.end()) break;
 			}
@@ -240,9 +263,17 @@ namespace KCL_rosplan {
 
 		} else if(msg.knowledge_type == rosplan_knowledge_msgs::KnowledgeItem::FACT) {
 			// add domain attribute
+
+			std::string param_str;
+			for (size_t i = 0; i < msg.values.size(); ++i) {
+				param_str += " " + msg.values[i].key + "=" + msg.values[i].value;
+			}
+
 			std::vector<rosplan_knowledge_msgs::KnowledgeItem>::iterator pit;
 			for(pit=model_facts.begin(); pit!=model_facts.end(); pit++) {
 				if(KnowledgeComparitor::containsKnowledge(msg, *pit)) {
+		   ROS_WARN("KCL: (KB) Domain attribute (%s%s) already exists",
+		            msg.attribute_name.c_str(), param_str.c_str());
 					return;
 				}
 			}
@@ -274,13 +305,23 @@ namespace KCL_rosplan {
 	 * add mission goal to knowledge base
 	 */
 	void KnowledgeBase::addMissionGoal(rosplan_knowledge_msgs::KnowledgeItem &msg) {
-        // TODO maybe to comment
+
+		std::string param_str;
+		for (size_t i = 0; i < msg.values.size(); ++i) {
+			param_str += " " + msg.values[i].key + "=" + msg.values[i].value;
+		}
+
 		std::vector<rosplan_knowledge_msgs::KnowledgeItem>::iterator pit;
 		for(pit=model_goals.begin(); pit!=model_goals.end(); pit++) {
-			if(KnowledgeComparitor::containsKnowledge(msg, *pit))
+			if(KnowledgeComparitor::containsKnowledge(msg, *pit)) {
+				ROS_WARN("KCL: (KB) Goal (%s%s) already posted",
+				         msg.attribute_name.c_str(), param_str.c_str());
 				return;
+			}
 		}
-		ROS_INFO("KCL: (KB) Adding mission goal (%s)", msg.attribute_name.c_str());
+		
+		ROS_INFO("KCL: (KB) Adding mission goal (%s%s)",
+		         msg.attribute_name.c_str(), param_str.c_str());
 		model_goals.push_back(msg);
         std::string predicateName = armorManager->addNorm(msg);
         model_norms_ontonames.push_back(predicateName); //saves the name used in ontology so it is easier to remove it
@@ -474,23 +515,27 @@ namespace KCL_rosplan {
 int main(int argc, char **argv)
 {
 	ros::init(argc, argv, "rosplan_knowledge_base");
-	ros::NodeHandle n;
-    ros::NodeHandlePtr n_ptr = ros::NodeHandlePtr(&n);
+	ros::NodeHandle n("~");
+	ros::NodeHandlePtr n_ptr = ros::NodeHandlePtr(&n);	
 
 	// parameters
 	std::string domainPath;
+	bool useUnknowns;
 	n.param("/rosplan/domain_path", domainPath, std::string("common/domain.pddl"));
-    std::string ontologyPath;
+	n.param("use_unknowns", useUnknowns, false);
+	 std::string ontologyPath;
+
     n.param("/rosplan/owl_path", ontologyPath, std::string("common/ontology.owl"));
     std::string iri;
-    n.param("/rosplan/iri", iri, std::string("https://github.com/EmaroLab/paco/owl/paco"));
+    n.param("/rosplan/iri", iri, std::string("https://github.com/EmaroLab/paco/owl/paco"));	
 
 	KCL_rosplan::KnowledgeBase kb;
 	ROS_INFO("KCL: (KB) Parsing domain");
 	kb.domain_parser.domain_parsed = false;
 	kb.domain_parser.parseDomain(domainPath);
-
-    // connecting to armor
+	kb.use_unknowns = useUnknowns;
+	
+	// connecting to armor
 	KCL_rosplan::ArmorManager armorManager = KCL_rosplan::ArmorManager(kb.domain_parser.domain_name, n_ptr);
     kb.armorManager = &armorManager;
 
@@ -519,6 +564,7 @@ int main(int argc, char **argv)
 	// update knowledge
 	ros::ServiceServer updateServer1 = n.advertiseService("/kcl_rosplan/update_knowledge_base", &KCL_rosplan::KnowledgeBase::updateKnowledge, &kb);
 	ros::ServiceServer updateServer2 = n.advertiseService("/kcl_rosplan/update_knowledge_base_array", &KCL_rosplan::KnowledgeBase::updateKnowledgeArray, &kb);
+	ros::ServiceServer updateServer3 = n.advertiseService("/kcl_rosplan/update_knowledge_base_constraints_oneof", &KCL_rosplan::KnowledgeBase::updateKnowledgeConstraintsOneOf, &kb);
 	ros::ServiceServer clearServer = n.advertiseService("/kcl_rosplan/clear_knowledge_base", &KCL_rosplan::KnowledgeBase::clearKnowledge, &kb);
 
 	// fetch knowledge

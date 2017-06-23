@@ -48,6 +48,9 @@ namespace KCL_rosplan {
 
 	public:
 
+		// conditional planning flags
+		bool use_unknowns;
+
 		// domain
 		DomainParser domain_parser;
 
@@ -55,12 +58,16 @@ namespace KCL_rosplan {
 		ArmorManager* armorManager = NULL;
 
 		// model
+		// TODO add constants to KB
+		std::map<std::string, std::vector<std::string> > model_constants;
 		std::map<std::string, std::vector<std::string> > model_instances;
 		std::vector<rosplan_knowledge_msgs::KnowledgeItem> model_facts;
 		std::vector<std::string> model_facts_ontonames;
 		std::vector<rosplan_knowledge_msgs::KnowledgeItem> model_functions;
 		std::vector<rosplan_knowledge_msgs::KnowledgeItem> model_goals;
-        std::vector<std::string> model_norms_ontonames;
+        	std::vector<std::string> model_norms_ontonames;
+		// conditional planning constraints
+		std::vector<std::vector<rosplan_knowledge_msgs::KnowledgeItem> > model_oneof_constraints;
 
 		// plan and mission filter
 		PlanFilter plan_filter;
@@ -86,6 +93,10 @@ namespace KCL_rosplan {
 		bool updateKnowledge(rosplan_knowledge_msgs::KnowledgeUpdateService::Request  &req, rosplan_knowledge_msgs::KnowledgeUpdateService::Response &res);
 		bool updateKnowledgeArray(rosplan_knowledge_msgs::KnowledgeUpdateServiceArray::Request &req, rosplan_knowledge_msgs::KnowledgeUpdateServiceArray::Response &res);
 		bool clearKnowledge(std_srvs::Empty::Request  &req, std_srvs::Empty::Response &res);
+
+		// conditional planning services
+		bool updateKnowledgeConstraintsOneOf(rosplan_knowledge_msgs::KnowledgeUpdateServiceArray::Request  &req, rosplan_knowledge_msgs::KnowledgeUpdateServiceArray::Response &res);
+		// TODO bool updateKnowledgeConstraintsUnknowns(rosplan_knowledge_msgs::KnowledgeUpdateServiceArray::Request  &req, rosplan_knowledge_msgs::KnowledgeUpdateServiceArray::Response &res);
 	};
 }
 #endif

@@ -26,8 +26,8 @@ namespace KCL_rosplan {
 		// publishing "action_dispatch", "action_feedback", "plan"; listening "action_feedback"
 		plan_publisher = nh.advertise<rosplan_dispatch_msgs::CompletePlan>("/kcl_rosplan/plan", 5, true);
 		problem_publisher = nh.advertise<std_msgs::String>("/kcl_rosplan/problem", 5, true);
-		plan_dispatcher->action_publisher = nh.advertise<rosplan_dispatch_msgs::ActionDispatch>("/kcl_rosplan/action_dispatch", 1000, true);
-		plan_dispatcher->action_feedback_pub = nh.advertise<rosplan_dispatch_msgs::ActionFeedback>("/kcl_rosplan/action_feedback", 5, true);
+		plan_dispatcher->action_publisher = nh.advertise<rosplan_dispatch_msgs::ActionDispatch>("/kcl_rosplan/action_dispatch", 1000, /* latch */ false);
+		plan_dispatcher->action_feedback_pub = nh.advertise<rosplan_dispatch_msgs::ActionFeedback>("/kcl_rosplan/action_feedback", 5, /* latch */ false);
 
 		// problem generation client
 		generate_problem_client = nh.serviceClient<rosplan_knowledge_msgs::GenerateProblemService>("/kcl_rosplan/generate_planning_problem");
@@ -320,8 +320,9 @@ namespace KCL_rosplan {
 			// generate PDDL problem (and problem-specific domain)
 			if(generate_problem) {
 				pddl_problem_generator.generatePDDLProblemFile(environment, problem_path);
-				ROS_INFO("KCL: (PS) (%s) The problem was generated!", problem_name.c_str());
+				ROS_INFO("KCL: (PS) (%s) The problem was generated.", problem_name.c_str());
 			} else {
+				/* TODO check and remove
 				// ROS_INFO("KCL: (PS) Skipping problem generation.");
 				rosplan_knowledge_msgs::GenerateProblemService genSrv;
 				genSrv.request.problem_path = problem_path;
@@ -333,7 +334,8 @@ namespace KCL_rosplan {
 					state_publisher.publish(statusMsg);
 					return false;
 				}
-				ROS_INFO("KCL: (PS) (%s) The problem was generated!", problem_name.c_str());
+				*/
+				ROS_INFO("KCL: (PS) (%s) Skipping default problem generation.", problem_name.c_str());
 			}
 
 			// publish problem
@@ -365,8 +367,8 @@ namespace KCL_rosplan {
 			statusMsg.data = "Dispatching";
 			state_publisher.publish(statusMsg);
 			plan_start_time = ros::WallTime::now().toSec();
+			dispatch_attempts += 1;
 			planSucceeded = plan_dispatcher->dispatchPlan(plan_parser->action_list, mission_start_time, plan_start_time);
-
 			
 			if (!planSucceeded) {
 				ROS_INFO("KCL: (PS) (%s) The plan failed!", problem_name.c_str());
@@ -375,6 +377,11 @@ namespace KCL_rosplan {
 			}
 		}
 		ROS_INFO("KCL: (PS) (%s) Planning System Finished", problem_name.c_str());
+
+		if (! planSucceeded && dispatch_attempts >= max_dispatch_attempts) {
+			ROS_INFO("KCL: (PS) (%s) Maximum dispatch attempts (%i) exceeded",
+			         problem_name.c_str(), max_dispatch_attempts);
+    }
 
 		system_status = READY;
 		statusMsg.data = "Ready";
@@ -401,12 +408,13 @@ namespace KCL_rosplan {
 		}
 
 		// run the planner
-		std::string commandString = planner_command;
-		std::size_t dit = commandString.find("DOMAIN");
-		if(dit!=std::string::npos) commandString.replace(dit,6,domain_path);
-		std::size_t pit = commandString.find("PROBLEM");
-		if(pit!=std::string::npos) commandString.replace(pit,7,problem_path);
-
+		std::string str = planner_command;
+		std::size_t dit = str.find("DOMAIN");
+		if(dit!=std::string::npos) str.replace(dit,6,domain_path);
+		std::size_t pit = str.find("PROBLEM");
+		if(pit!=std::string::npos) str.replace(pit,7,problem_path);
+		
+		std::string commandString = str + " > " + data_path + "plan.pddl";
 		ROS_INFO("KCL: (PS) (%s) Running: %s", problem_name.c_str(),  commandString.c_str());
 		std::string plan = runCommand(commandString.c_str());
 		ROS_INFO("KCL: (PS) (%s) Planning complete", problem_name.c_str());

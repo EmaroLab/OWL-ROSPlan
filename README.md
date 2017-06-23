@@ -59,26 +59,54 @@ To run OWL-ROSPlan, you need to install first the following ROS modules:
 + [ARMOR](https://github.com/EmaroLab/armor), a framework for OWL ontologies manipulation and querying in ROS
 + [armor_msgs](https://github.com/EmaroLab/armor_msgs)
 
-Then, install the following dependencies
+Then, install the following dependencies.
 
-(for Indigo)
+#### ROS Indigo instructions
+
 ```sh
 sudo apt-get install flex ros-indigo-mongodb-store ros-indigo-tf2-bullet freeglut3-dev
 ```
 
-Select a catkin workspace or create a new one:
+#### ROS Kinetic instructions
+
+Install **MongoDB**:
+
 ```sh
-mkdir -p ROSPlan/src
-cd ROSPlan/
+git clone -b 26compat https://github.com/mongodb/mongo-cxx-driver.git
+sudo apt-get install scons
+cd mongo-cxx-driver
+sudo  scons  --prefix=/usr/local/ --full --use-system-boost --disable-warnings-as-errors
 ```
-Get the code:
+
+Install **mongodb_store** in your worskace:
+
 ```sh
-cd src/
-git clone https://github.com/EmaroLab/ROSPlan
+sudo apt-get install python-pymongo
+cd /home/$USER/catkin_ws/src
+git clone https://github.com/strands-project/mongodb_store.git
+cd ..
+catkin_make
+```
+
+Install other dependencies:
+
+```sh
+sh sudo apt-get install flex ros-kinetic-move-base-msgs ros-kinetic-nav-msgs ros-kinetic-tf2-bullet freeglut3-dev
+``` 
+
+#### Get the code
+
+Clone the following repositories in your workspace:
+
+```sh
+cd /home/$USER/catkin_ws/src
+git clone https://github.com/clearpathrobotics/occupancy_grid_utils
+git clone https://github.com/EmaroLab/OWL-ROSPlan
 ```
 Compile everything:
+
 ```sh
-source /opt/ros/indigo/setup.bash
+cd ..
 catkin_make
 ```
 
@@ -88,7 +116,7 @@ An example is provided which simulates a robot acting on an articulated object t
 
 You can launch the demo by typing:
 
- ```roslaunch rosplan_config launch_onto_rosplan.launch```
+ ```roslaunch rosplan_planning_system launch_onto_rosplan.launch```
 
 ## Contacts:
 

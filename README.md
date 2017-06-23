@@ -16,8 +16,8 @@ Most modifications have been operated in accordance with the documentation linke
 
 + OWL-ROSPlan currently does not support Esterel Planning
 + OWL-ROSPlan default planner is [Probe](http://www.ai.upf.edu/software/probe-classical-planner)
-+ OWL-ROSPlan allows to define into the ontology a resoning mechanism for goal inference, this required the addition of a new topic for the  gui. More on this in the next section.
-+ Light modifications to the rqt gui to improve readability and reflect other changes.
++ OWL-ROSPlan allows to define into the ontology a resoning mechanism for goal inference, this required the addition of a new topic for the GUI. More on this in the next section.
++ Light modifications to the rqt GUI to improve readability and reflect other changes.
 
 Codewise, most functional modifications are in the ```rosplan_knowledge_base``` package. ```rosplan_planning_system``` has beed modified only to support Probe call and plan parsing, but it is otherwise unchanged. 
 
@@ -43,7 +43,7 @@ The underlying ARMOR framework provides an experimental gui to visualize the cur
 
 ```<param name="/armor/settings/show_gui" value="true" />```
 
-You can also communicate directly with the ARMOR framework, this allows you to save the current state of the ontology or add other types of knowledge beyond the strictly planning related one. In case, you can refer to ARMOR [homepage](https://github.com/EmaroLab/armor) and [commands documentation](https://github.com/EmaroLab/armor/blob/master/commands.md).
+You can also communicate directly with the ARMOR framework, this allows you to save the current state of the ontology or add other types of knowledge beyond the strictly planning related one. In case, you can refer to ARMOR [homepage](https://github.com/EmaroLab/armor) and [commands](https://github.com/EmaroLab/armor/blob/master/commands.md) documentation.
 
 ## Installation
 
@@ -78,7 +78,7 @@ cd mongo-cxx-driver
 sudo  scons  --prefix=/usr/local/ --full --use-system-boost --disable-warnings-as-errors
 ```
 
-Install **mongodb_store** in your worskace:
+Clone **mongodb_store** in your worskace:
 
 ```sh
 sudo apt-get install python-pymongo
@@ -103,6 +103,13 @@ cd /home/$USER/catkin_ws/src
 git clone https://github.com/clearpathrobotics/occupancy_grid_utils
 git clone https://github.com/EmaroLab/OWL-ROSPlan
 ```
+
+If you want to run the example, clone also:
+
+```sh
+https://github.com/EmaroLab/paco_actions 
+```
+
 Compile everything:
 
 ```sh
@@ -114,9 +121,11 @@ catkin_make
 
 An example is provided which simulates a robot acting on an articulated object to reach a given configuration. 
 
-You can launch the demo by typing:
+You can launch the example by typing:
 
  ```roslaunch rosplan_planning_system launch_onto_rosplan.launch```
+
+ The example broke after the latest update. A fix is coming soon :)
 
 ## Contacts:
 

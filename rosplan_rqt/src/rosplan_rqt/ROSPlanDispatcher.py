@@ -151,6 +151,7 @@ class PlanViewWidget(QWidget):
             self._goal_list.clear()
             for goal in resp_all.attributes:
                 item = QListWidgetItem(self.goalView)
+                item.setForeground(QColor('#ffffff'))
                 goalText = '(' + goal.attribute_name
                 for keyval in goal.values:
                      goalText = goalText + ' ' + keyval.value
@@ -178,6 +179,7 @@ class PlanViewWidget(QWidget):
             for attribute in resp_active.attributes:
                 attribute_text = ''
                 item = QListWidgetItem(self.modelView)
+                item.setForeground(QColor('#2e3436'))
                 if attribute.is_negative:
                     attribute_text = '(not '
                 attribute_text = attribute_text + '(' + attribute.attribute_name
@@ -205,9 +207,11 @@ class PlanViewWidget(QWidget):
             instance_client = rospy.ServiceProxy('/kcl_rosplan/get_current_instances', GetInstanceService)
             resp_active = instance_client(typename)
             item = QTreeWidgetItem(self.instanceView)
+            item.setForeground(0, QBrush(QColor('#2e3436')))
             item.setText(0, typename)
             for instanceName in resp_active.instances:
                 inst = QTreeWidgetItem(item)
+                inst.setForeground(0, QBrush(QColor('#2e3436')))
                 inst.setText(0, instanceName)
             if typename in expanded_list:
                 item.setExpanded(True)
@@ -233,13 +237,19 @@ class PlanViewWidget(QWidget):
 
             if self._status_list.get(str(action.action_id), "-") == 'action enabled':
                 item.setBackground(2, QColor('#8094ff'))
+                item.setForeground(2, QBrush(QColor('#ffffff')))
                 item.setBackground(3, QColor('#8094ff'))
+                item.setForeground(3, QBrush(QColor('#ffffff')))
             elif self._status_list.get(str(action.action_id), "-") == 'action achieved':
                 item.setBackground(2, QColor('#7fc97f'))
+                item.setForeground(2, QBrush(QColor('#ffffff')))
                 item.setBackground(3, QColor('#7fc97f'))
+                item.setForeground(3, QBrush(QColor('#ffffff')))
             elif self._status_list.get(str(action.action_id), "-") == 'precondition false':
                 item.setBackground(2, QColor('#f97070'))
+                item.setForeground(2, QBrush(QColor('#ffffff')))
                 item.setBackground(3, QColor('#f97070'))
+                item.setForeground(3, QBrush(QColor('#ffffff')))
 
             action_name = '(' + action.name
             for keyval in action.parameters:
@@ -307,7 +317,7 @@ class PlanViewWidget(QWidget):
                 resp = predicates_client(param_type)
                 parameters.append(resp.instances)
             except rospy.ServiceException, e:
-                print "Service call failed: %s"%e
+                print "Service call failed: %s" % e
         for element in product(*parameters):
             pred = join(element, ' ')
             combo.addItem(pred)
@@ -384,7 +394,7 @@ class PlanViewWidget(QWidget):
             knowledge.instance_name = self.instanceNameEdit.text()
             resp = update_client(KnowledgeUpdateServiceRequest.ADD_KNOWLEDGE, knowledge)
         except rospy.ServiceException, e:
-            print "Service call failed: %s"%e
+            print "Service call failed: %s" % e
         self.refresh_model()
 
     """

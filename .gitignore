@@ -36,6 +36,7 @@
 .idea/
 */.idea
 */cmake-build-debug
+README.html
 
 # Planner generated files
 plan_report

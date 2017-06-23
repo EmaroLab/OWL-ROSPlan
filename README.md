@@ -7,7 +7,7 @@ The original ROSPlan framework provides a generic method for task planning in a 
 
 On top of that, **OWL-ROSPlan** now use an OWL ontology to store knowledge and object instances, allowing logic reasoning.
 
-The main ROSPlan website and documentation is available at the project
+The original ROSPlan documentation is available at the project
 [homepage](http://kcl-planning.github.io/ROSPlan/).
 
 ## Differences with ROSPlan

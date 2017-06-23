@@ -247,7 +247,7 @@ namespace KCL_rosplan {
 		max_dispatch_attempts = 1;
 
 		// call planning server
-		ROS_INFO("KCL: (PS) (%s) Planning Action recieved.", goal->problem_path.c_str());
+		ROS_INFO("KCL: (PS) (%s) Planning Action received.", goal->problem_path.c_str());
 		if(runPlanningServer(goal->domain_path, goal->problem_path, goal->data_path, goal->planner_command)) {
 			plan_server->setSucceeded();
 		} else {

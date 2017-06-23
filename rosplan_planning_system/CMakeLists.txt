@@ -95,7 +95,6 @@ set(PLANNING_SOURCES
 ## planning system sources
 set(PLANNING_INTERFACE_SOURCES
 	src/PlannerInterface.cpp
-	src/PlanParsing/POPFPlanParser.cpp
 	src/PlanParsing/CFFPlanParser.cpp
 	src/PlanParsing/CLGPlanParser.cpp
 	src/PlanParsing/POPFEsterelPlanParser.cpp

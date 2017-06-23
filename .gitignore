@@ -35,6 +35,13 @@
 # Directory-based project format
 .idea/
 */.idea
+*/cmake-build-debug
+
+# Planner generated files
+plan_report
+plan.pddl
+plan_*
+plan.*
 
 # OS generated files
 .DS_Store
@@ -44,3 +51,4 @@
 .Trashes
 ehthumbs.db
 Thumbs.db
+catalog-v001.xml

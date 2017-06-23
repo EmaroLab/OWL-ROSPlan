@@ -13,7 +13,7 @@
 #include "PDDLProblemGenerator.h"
 
 #include "PlanParser.h"
-#include "POPFPlanParser.h"
+#include "ProbePlanParser.h"
 #include "POPFEsterelPlanParser.h"
 #include "CFFPlanParser.h"
 #include "CLGPlanParser.h"

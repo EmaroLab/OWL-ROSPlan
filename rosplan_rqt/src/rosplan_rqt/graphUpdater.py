@@ -1,20 +1,11 @@
 #!/usr/bin/env python
 
-import os
 import rospy
-import rospkg
-import sys
 
-from itertools import product
-from string import join, split
-
-from std_msgs.msg import *
-from diagnostic_msgs.msg import KeyValue
 from rosplan_dispatch_msgs.msg import *
-from rosplan_knowledge_msgs.srv import *
-from rosplan_knowledge_msgs.msg import *
 
 from python_qt_binding.QtCore import Qt, QTimer
+from python_qt_binding.QtGui import QTreeWidgetItem
 
 class PlanViewWidget:
 

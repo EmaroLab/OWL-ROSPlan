@@ -3,16 +3,8 @@
 import os
 import rospy
 import rospkg
-import sys
-
-from itertools import product
-from string import join, split
 
 from std_msgs.msg import *
-from diagnostic_msgs.msg import KeyValue
-from rosplan_dispatch_msgs.msg import *
-from rosplan_knowledge_msgs.srv import *
-from rosplan_knowledge_msgs.msg import *
 
 from python_qt_binding import loadUi, QT_BINDING_VERSION
 from python_qt_binding.QtCore import Qt, QTimer, QUrl, Signal, Slot, pyqtSignal
@@ -20,6 +12,7 @@ if QT_BINDING_VERSION.startswith('4'):
     from python_qt_binding.QtGui import  QWidget
 else:
     from python_qt_binding.QtWidgets import QWidget
+
 
 class ProblemViewerWidget(QWidget):
 
@@ -47,7 +40,7 @@ class ProblemViewerWidget(QWidget):
         self._update_signal.emit()
 
     def update_problem(self):
-	    self.textEdit.setPlainText(self._problem_text)
+        self.textEdit.setPlainText(self._problem_text)
 
     """
     Qt methods

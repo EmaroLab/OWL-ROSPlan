@@ -515,7 +515,7 @@ namespace KCL_rosplan {
 int main(int argc, char **argv)
 {
 	ros::init(argc, argv, "rosplan_knowledge_base");
-	ros::NodeHandle n("~");
+	ros::NodeHandle n;
 	ros::NodeHandlePtr n_ptr = ros::NodeHandlePtr(&n);	
 
 	// parameters

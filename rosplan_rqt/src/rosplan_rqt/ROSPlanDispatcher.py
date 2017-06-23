@@ -3,7 +3,6 @@
 import os
 import rospy
 import rospkg
-import sys
 
 from itertools import product
 from string import join, split
@@ -17,10 +16,11 @@ from rosplan_knowledge_msgs.msg import *
 from python_qt_binding import loadUi, QT_BINDING_VERSION
 from python_qt_binding.QtCore import Qt, QTimer, Signal, Slot
 if QT_BINDING_VERSION.startswith('4'):
-    from python_qt_binding.QtGui import QHeaderView, QIcon, QTreeWidgetItem, QListWidgetItem, QWidget, QColor, QPalette, QBrush
+    from python_qt_binding.QtGui import QHeaderView, QTreeWidgetItem, QListWidgetItem, QWidget, QColor, QPalette, QBrush
 else:
     from python_qt_binding.QtWidgets import QHeaderView, QTreeWidgetItem, QListWidgetItem, QWidget
-    from python_qt_binding.QtGui import QIcon, QColor, QPalette, QBrush
+    from python_qt_binding.QtGui import QColor, QPalette, QBrush
+
 
 class PlanViewWidget(QWidget):
 
@@ -109,7 +109,7 @@ class PlanViewWidget(QWidget):
         rospy.Subscriber("/kcl_rosplan/plan", CompletePlan, self.plan_callback)
         rospy.Subscriber("/kcl_rosplan/action_feedback", ActionFeedback, self.action_feedback_callback)
         rospy.Subscriber("/kcl_rosplan/system_state", String, self.system_status_callback)
-self._plan_pub = rospy.Publisher('/kcl_rosplan/planning_commands', String, queue_size=10)
+        self._plan_pub = rospy.Publisher('/kcl_rosplan/planning_commands', String, queue_size=10)
 
         # set view colors
         palette = self.planView.palette()
@@ -176,19 +176,19 @@ self._plan_pub = rospy.Publisher('/kcl_rosplan/planning_commands', String, queue
             self.modelView.clear()
             self._fact_list.clear()
             for attribute in resp_active.attributes:
-			attributeText = ''
+                attribute_text = ''
                 item = QListWidgetItem(self.modelView)
                 if attribute.is_negative:
-                    attributeText = '(not '
-                attributeText = attributeText + '(' + attribute.attribute_name
+                    attribute_text = '(not '
+                attribute_text = attribute_text + '(' + attribute.attribute_name
                 for keyval in attribute.values:
-                     attributeText = attributeText + ' ' + keyval.value
-                attributeText = attributeText + ')'
+                    attribute_text = attribute_text + ' ' + keyval.value
+                attribute_text = attribute_text + ')'
                 if attribute.is_negative:
-                    attributeText = attributeText + ')'
-                item.setText(attributeText)
-                self._fact_list[attributeText] = attribute
-                if attributeText in selected_list:
+                    attribute_text = attribute_text + ')'
+                item.setText(attribute_text)
+                self._fact_list[attribute_text] = attribute
+                if attribute_text in selected_list:
                     item.setSelected(True)
         except rospy.ServiceException, e:
             print "Service call failed: %s"%e

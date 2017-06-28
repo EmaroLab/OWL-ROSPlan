@@ -362,6 +362,7 @@ namespace KCL_rosplan {
 			state_publisher.publish(statusMsg);
 			plan_start_time = ros::WallTime::now().toSec();
 			dispatch_attempts += 1;
+
 			planSucceeded = plan_dispatcher->dispatchPlan(plan_parser->action_list, mission_start_time, plan_start_time);
 			
 			if (!planSucceeded) {

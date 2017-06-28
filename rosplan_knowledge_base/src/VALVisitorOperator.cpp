@@ -144,7 +144,6 @@ namespace KCL_rosplan {
 	};
 
 	void VALVisitorOperator::visit_simple_effect(VAL::simple_effect * e) {
-
 		e->prop->visit(this);
 
 		if(eff_neg) {
@@ -164,8 +163,15 @@ namespace KCL_rosplan {
 		// e->getFTerm()
 	}
 
-	void VALVisitorOperator::visit_forall_effect(VAL::forall_effect * e) {std::cout << "not implemented forall" << std::endl;};
-	void VALVisitorOperator::visit_cond_effect(VAL::cond_effect * e) {std::cout << "not implemented cond" << std::endl;};
+	void VALVisitorOperator::visit_forall_effect(VAL::forall_effect * e) {
+        std::cout << "not implemented forall" << std::endl;
+        // TODO
+    };
+
+	void VALVisitorOperator::visit_cond_effect(VAL::cond_effect * e) {
+        std::cout << "not implemented cond" << std::endl;
+        // TODO
+    };
 
 	/*-------*/
 	/* extra */

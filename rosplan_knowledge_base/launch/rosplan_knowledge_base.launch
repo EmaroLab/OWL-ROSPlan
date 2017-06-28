@@ -10,7 +10,7 @@
     <node pkg="armor" type="execute" name="armor_service" args="it.emarolab.armor.ARMORMainService" />
 
     <!-- knowledge base -->
-    <node name="rosplan_knowledge_base" pkg="rosplan_knowledge_base" type="knowledgeBase" respawn="false" />
+    <node name="rosplan_knowledge_base" pkg="rosplan_knowledge_base" type="knowledgeBase" respawn="false" /> 
 
     <!-- scene database (MongoDB) -->
     <node name="rosplan_scene_base" pkg="mongodb_store" type="mongodb_server.py" respawn="false" >

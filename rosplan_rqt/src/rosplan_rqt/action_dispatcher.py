@@ -2,6 +2,7 @@ from rqt_gui_py.plugin import Plugin
 
 from .ROSPlanActionDispatcher import ActionDispatchWidget
 
+
 class ROSPlanActionDispatcher(Plugin):
 
     def __init__(self, context):

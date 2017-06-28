@@ -143,70 +143,72 @@ namespace KCL_rosplan {
 
 		if(action_success) {
 
-			// update knowledge base
-			rosplan_knowledge_msgs::KnowledgeUpdateService updatePredSrv;
-			updatePredSrv.request.knowledge.knowledge_type = rosplan_knowledge_msgs::KnowledgeItem::FACT;
-			
-			// simple start del effects
-			updatePredSrv.request.update_type = rosplan_knowledge_msgs::KnowledgeUpdateService::Request::REMOVE_KNOWLEDGE;
-			for(int i=0; i<op.at_start_del_effects.size(); i++) {
-				updatePredSrv.request.knowledge.attribute_name = op.at_start_del_effects[i].name;
-				updatePredSrv.request.knowledge.values.clear();
-				diagnostic_msgs::KeyValue pair;
-				for(size_t j=0; j<op.at_start_del_effects[i].typed_parameters.size(); j++) {
-					pair.key = predicates[op.at_start_del_effects[i].name].typed_parameters[j].key;
-					pair.value = boundParameters[op.at_start_del_effects[i].typed_parameters[j].key];
-					updatePredSrv.request.knowledge.values.push_back(pair);
-				}
-				if(!update_knowledge_client.call(updatePredSrv))
-					ROS_INFO("KCL: (%s) failed to update PDDL model in knowledge base: %s", params.name.c_str(), op.at_start_del_effects[i].name.c_str());
-			}
+            // TODO disabled till forall and cond effects are supported from the kb, working with perception only
 
-			// simple start add effects
-			updatePredSrv.request.update_type = rosplan_knowledge_msgs::KnowledgeUpdateService::Request::ADD_KNOWLEDGE;
-			for(int i=0; i<op.at_start_add_effects.size(); i++) {
-				updatePredSrv.request.knowledge.attribute_name = op.at_start_add_effects[i].name;
-				updatePredSrv.request.knowledge.values.clear();
-				diagnostic_msgs::KeyValue pair;
-				for(size_t j=0; j<op.at_start_add_effects[i].typed_parameters.size(); j++) {
-					pair.key = predicates[op.at_start_add_effects[i].name].typed_parameters[j].key;
-					pair.value = boundParameters[op.at_start_add_effects[i].typed_parameters[j].key];
-					updatePredSrv.request.knowledge.values.push_back(pair);
-				}
-				if(!update_knowledge_client.call(updatePredSrv))
-					ROS_INFO("KCL: (%s) failed to update PDDL model in knowledge base: %s", params.name.c_str(), op.at_start_add_effects[i].name.c_str());
-			}
-
-			// simple END del effects
-			updatePredSrv.request.update_type = rosplan_knowledge_msgs::KnowledgeUpdateService::Request::REMOVE_KNOWLEDGE;
-			for(int i=0; i<op.at_end_del_effects.size(); i++) {
-				updatePredSrv.request.knowledge.attribute_name = op.at_end_del_effects[i].name;
-				updatePredSrv.request.knowledge.values.clear();
-				diagnostic_msgs::KeyValue pair;
-				for(size_t j=0; j<op.at_end_del_effects[i].typed_parameters.size(); j++) {
-					pair.key = predicates[op.at_end_del_effects[i].name].typed_parameters[j].key;
-					pair.value = boundParameters[op.at_end_del_effects[i].typed_parameters[j].key];
-					updatePredSrv.request.knowledge.values.push_back(pair);
-				}
-				if(!update_knowledge_client.call(updatePredSrv))
-					ROS_INFO("KCL: (%s) failed to update PDDL model in knowledge base: %s", params.name.c_str(), op.at_end_del_effects[i].name.c_str());
-			}
-
-			// simple END add effects
-			updatePredSrv.request.update_type = rosplan_knowledge_msgs::KnowledgeUpdateService::Request::ADD_KNOWLEDGE;
-			for(int i=0; i<op.at_end_add_effects.size(); i++) {
-				updatePredSrv.request.knowledge.attribute_name = op.at_end_add_effects[i].name;
-				updatePredSrv.request.knowledge.values.clear();
-				diagnostic_msgs::KeyValue pair;
-				for(size_t j=0; j<op.at_end_add_effects[i].typed_parameters.size(); j++) {
-					pair.key = predicates[op.at_end_add_effects[i].name].typed_parameters[j].key;
-					pair.value = boundParameters[op.at_end_add_effects[i].typed_parameters[j].key];
-					updatePredSrv.request.knowledge.values.push_back(pair);
-				}
-				if(!update_knowledge_client.call(updatePredSrv))
-					ROS_INFO("KCL: (%s) failed to update PDDL model in knowledge base: %s", params.name.c_str(), op.at_end_add_effects[i].name.c_str());
-			}
-
+//			// update knowledge base
+//			rosplan_knowledge_msgs::KnowledgeUpdateService updatePredSrv;
+//			updatePredSrv.request.knowledge.knowledge_type = rosplan_knowledge_msgs::KnowledgeItem::FACT;
+//
+//			// simple start del effects
+//			updatePredSrv.request.update_type = rosplan_knowledge_msgs::KnowledgeUpdateService::Request::REMOVE_KNOWLEDGE;
+//			for(int i=0; i<op.at_start_del_effects.size(); i++) {
+//				updatePredSrv.request.knowledge.attribute_name = op.at_start_del_effects[i].name;
+//				updatePredSrv.request.knowledge.values.clear();
+//				diagnostic_msgs::KeyValue pair;
+//				for(size_t j=0; j<op.at_start_del_effects[i].typed_parameters.size(); j++) {
+//					pair.key = predicates[op.at_start_del_effects[i].name].typed_parameters[j].key;
+//					pair.value = boundParameters[op.at_start_del_effects[i].typed_parameters[j].key];
+//					updatePredSrv.request.knowledge.values.push_back(pair);
+//				}
+//				if(!update_knowledge_client.call(updatePredSrv))
+//					ROS_INFO("KCL: (%s) failed to update PDDL model in knowledge base: %s", params.name.c_str(), op.at_start_del_effects[i].name.c_str());
+//			}
+//
+//			// simple start add effects
+//			updatePredSrv.request.update_type = rosplan_knowledge_msgs::KnowledgeUpdateService::Request::ADD_KNOWLEDGE;
+//			for(int i=0; i<op.at_start_add_effects.size(); i++) {
+//				updatePredSrv.request.knowledge.attribute_name = op.at_start_add_effects[i].name;
+//				updatePredSrv.request.knowledge.values.clear();
+//				diagnostic_msgs::KeyValue pair;
+//				for(size_t j=0; j<op.at_start_add_effects[i].typed_parameters.size(); j++) {
+//					pair.key = predicates[op.at_start_add_effects[i].name].typed_parameters[j].key;
+//					pair.value = boundParameters[op.at_start_add_effects[i].typed_parameters[j].key];
+//					updatePredSrv.request.knowledge.values.push_back(pair);
+//				}
+//				if(!update_knowledge_client.call(updatePredSrv))
+//					ROS_INFO("KCL: (%s) failed to update PDDL model in knowledge base: %s", params.name.c_str(), op.at_start_add_effects[i].name.c_str());
+//			}
+//
+//			// simple END del effects
+//			updatePredSrv.request.update_type = rosplan_knowledge_msgs::KnowledgeUpdateService::Request::REMOVE_KNOWLEDGE;
+//			for(int i=0; i<op.at_end_del_effects.size(); i++) {
+//				updatePredSrv.request.knowledge.attribute_name = op.at_end_del_effects[i].name;
+//				updatePredSrv.request.knowledge.values.clear();
+//				diagnostic_msgs::KeyValue pair;
+//				for(size_t j=0; j<op.at_end_del_effects[i].typed_parameters.size(); j++) {
+//					pair.key = predicates[op.at_end_del_effects[i].name].typed_parameters[j].key;
+//					pair.value = boundParameters[op.at_end_del_effects[i].typed_parameters[j].key];
+//					updatePredSrv.request.knowledge.values.push_back(pair);
+//				}
+//				if(!update_knowledge_client.call(updatePredSrv))
+//					ROS_INFO("KCL: (%s) failed to update PDDL model in knowledge base: %s", params.name.c_str(), op.at_end_del_effects[i].name.c_str());
+//			}
+//
+//			// simple END add effects
+//			updatePredSrv.request.update_type = rosplan_knowledge_msgs::KnowledgeUpdateService::Request::ADD_KNOWLEDGE;
+//			for(int i=0; i<op.at_end_add_effects.size(); i++) {
+//				updatePredSrv.request.knowledge.attribute_name = op.at_end_add_effects[i].name;
+//				updatePredSrv.request.knowledge.values.clear();
+//				diagnostic_msgs::KeyValue pair;
+//				for(size_t j=0; j<op.at_end_add_effects[i].typed_parameters.size(); j++) {
+//					pair.key = predicates[op.at_end_add_effects[i].name].typed_parameters[j].key;
+//					pair.value = boundParameters[op.at_end_add_effects[i].typed_parameters[j].key];
+//					updatePredSrv.request.knowledge.values.push_back(pair);
+//				}
+//				if(!update_knowledge_client.call(updatePredSrv))
+//					ROS_INFO("KCL: (%s) failed to update PDDL model in knowledge base: %s", params.name.c_str(), op.at_end_add_effects[i].name.c_str());
+//			}
+//
 			// sleep a little
 			ros::Rate big_rate(0.5);
 			big_rate.sleep();

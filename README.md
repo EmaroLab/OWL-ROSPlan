@@ -91,7 +91,7 @@ catkin_make
 Install other dependencies:
 
 ```sh
-sh sudo apt-get install flex ros-kinetic-move-base-msgs ros-kinetic-nav-msgs ros-kinetic-tf2-bullet freeglut3-dev
+sudo apt-get install flex ros-kinetic-move-base-msgs ros-kinetic-nav-msgs ros-kinetic-tf2-bullet freeglut3-dev
 ``` 
 
 #### Get the code
@@ -117,6 +117,12 @@ cd ..
 catkin_make
 ```
 
+As for ROSPlan, remember to stop MongoDB before launching OWL-ROSPlan for the first time in a new session:
+
+```sh
+sudo service mongodb stop
+```
+
 ## Running an example
 
 An example is provided which simulates a robot acting on an articulated object to reach a given configuration. 
@@ -125,7 +131,16 @@ You can launch the example by typing:
 
  ```roslaunch rosplan_planning_system launch_onto_rosplan.launch```
 
- The example broke after the latest update. A fix is coming soon :)
+## Warning
+
+Currently KCL-ROSPlan has not implemented yet `forall` and `cond` action effects, which we use (also in the example).
+For this reason, we have disabled effects from `RPActionInterface`.
+This is not an issue with our current setup since we can get the updated states from perception and actually we encourage this behavior for semantic feedback.
+An option to re-enable effects will be added as soon as `forall` and `cond` are implemented.
+
+**Until then, you have to manually update ROSPlan knowledge base after every action.**
+
+Not doing so will most probably cause several `violated preconditions` errors.
 
 ## Contacts:
 

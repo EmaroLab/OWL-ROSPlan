@@ -189,6 +189,7 @@ namespace KCL_rosplan {
 				for(kit=querySrv.response.false_knowledge.begin(); kit != querySrv.response.false_knowledge.end(); kit++)
 					ROS_INFO("KCL: (PS)        [%s]", kit->attribute_name.c_str());
 			}
+
 			return querySrv.response.all_true;
 
 		} else {
@@ -217,7 +218,7 @@ namespace KCL_rosplan {
 		// more specific feedback
 		actionFeedback(msg);
 
-		// action completed (successfuly)
+		// action completed (successfully)
 		if(!action_completed[msg->action_id] && 0 == msg->status.compare("action achieved"))
 			action_completed[msg->action_id] = true;
 

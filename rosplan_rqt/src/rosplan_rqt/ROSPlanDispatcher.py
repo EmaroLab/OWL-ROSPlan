@@ -15,6 +15,7 @@ from rosplan_knowledge_msgs.msg import *
 
 from python_qt_binding import loadUi, QT_BINDING_VERSION
 from python_qt_binding.QtCore import Qt, QTimer, Signal, Slot
+
 if QT_BINDING_VERSION.startswith('4'):
     from python_qt_binding.QtGui import QHeaderView, QTreeWidgetItem, QListWidgetItem, QWidget, QColor, QPalette, QBrush
 else:
@@ -23,7 +24,6 @@ else:
 
 
 class PlanViewWidget(QWidget):
-
     # plan view
     _column_names = ['action_id', 'dispatch_time', 'action_name', 'status', 'duration']
     _action_list = []
@@ -60,7 +60,7 @@ class PlanViewWidget(QWidget):
                 self._predicate_param_type_list[pred.name] = param_list
                 self._predicate_param_label_list[pred.name] = label_list
         except rospy.ServiceException, e:
-            print "Service call failed: %s"%e
+            print "Service call failed: %s" % e
         self._handle_goal_name_changed(0)
         self._handle_fact_name_changed(0)
 
@@ -73,7 +73,7 @@ class PlanViewWidget(QWidget):
                 self.typeComboBox.addItem(typename)
                 self._type_list.append(typename)
         except rospy.ServiceException, e:
-            print "Service call failed: %s"%e
+            print "Service call failed: %s" % e
 
         # connect components
         self.planButton.clicked[bool].connect(self._handle_plan_clicked)
@@ -135,6 +135,7 @@ class PlanViewWidget(QWidget):
     """
     updating goal and model view
     """
+
     def refresh_model(self):
         # goals
         rospy.wait_for_service('/kcl_rosplan/get_current_goals')
@@ -154,7 +155,7 @@ class PlanViewWidget(QWidget):
                 item.setForeground(QColor('#ffffff'))
                 goalText = '(' + goal.attribute_name
                 for keyval in goal.values:
-                     goalText = goalText + ' ' + keyval.value
+                    goalText = goalText + ' ' + keyval.value
                 goalText = goalText + ')'
                 item.setText(goalText)
                 if goal not in resp_active.attributes:
@@ -165,7 +166,7 @@ class PlanViewWidget(QWidget):
                 if goalText in selected_list:
                     item.setSelected(True)
         except rospy.ServiceException, e:
-            print "Service call failed: %s"%e
+            print "Service call failed: %s" % e
         # facts and functions
         rospy.wait_for_service('/kcl_rosplan/get_current_knowledge')
         selected_list = []
@@ -193,7 +194,7 @@ class PlanViewWidget(QWidget):
                 if attribute_text in selected_list:
                     item.setSelected(True)
         except rospy.ServiceException, e:
-            print "Service call failed: %s"%e
+            print "Service call failed: %s" % e
         # instances
         expanded_list = []
         root = self.instanceView.invisibleRootItem()
@@ -219,6 +220,7 @@ class PlanViewWidget(QWidget):
     """
     updating plan view
     """
+
     def refresh_plan(self):
         expanded_list = []
         root = self.planView.invisibleRootItem()
@@ -260,13 +262,14 @@ class PlanViewWidget(QWidget):
                 param.setText(self._column_index['duration'], '')
                 param.setText(self._column_index['status'], '')
                 action_name = action_name + ' ' + keyval.value
-            item.setText(self._column_index['action_name'], action_name +')')
+            item.setText(self._column_index['action_name'], action_name + ')')
             if str(action.action_id) in expanded_list:
                 item.setExpanded(True)
 
     """
     called when the plan button is clicked; sends a planning request
     """
+
     def _handle_plan_clicked(self, checked):
         self._status_list.clear()
         self._plan_pub.publish('plan')
@@ -274,6 +277,7 @@ class PlanViewWidget(QWidget):
     """
     called when the plan button is clicked; sends a planning request
     """
+
     def _handle_pause_clicked(self, checked):
         self._status_list.clear()
         self._plan_pub.publish('pause')
@@ -281,6 +285,7 @@ class PlanViewWidget(QWidget):
     """
     called when the plan button is clicked; sends a planning request
     """
+
     def _handle_cancel_clicked(self, checked):
         self._status_list.clear()
         self._plan_pub.publish('cancel')
@@ -288,12 +293,14 @@ class PlanViewWidget(QWidget):
     """
     callback for complete_plan
     """
+
     def plan_callback(self, data):
         self._action_list = data.plan
 
     """
     callback for action_feedback
     """
+
     def action_feedback_callback(self, data):
         self._status_list[str(data.action_id)] = data.status
         self.refresh_model()
@@ -301,12 +308,14 @@ class PlanViewWidget(QWidget):
     """
     callback for system_state
     """
+
     def system_status_callback(self, data):
         self.statusLabel.setText(data.data)
 
     """
     handle changing selected goal or fact predicate name
     """
+
     def _handle_predicate_name_change(self, predName, combo):
         combo.clear()
         rospy.wait_for_service('/kcl_rosplan/get_current_instances')
@@ -331,6 +340,7 @@ class PlanViewWidget(QWidget):
     """
     called when the add goal button is clicked
     """
+
     def _handle_add_button_clicked(self, updateType, predName, combo):
         base_arg_key = 'has_arg_'
         rospy.wait_for_service('/kcl_rosplan/update_knowledge_base')
@@ -348,19 +358,22 @@ class PlanViewWidget(QWidget):
                 knowledge.values.append(pair)
             resp = update_client(updateType, knowledge)
         except rospy.ServiceException, e:
-            print "Service call failed: %s"%e
+            print "Service call failed: %s" % e
 
     def _handle_add_goal_clicked(self, data):
-        self._handle_add_button_clicked(KnowledgeUpdateServiceRequest.ADD_GOAL, self.goalNameComboBox.currentText(), self.goalComboBox)
+        self._handle_add_button_clicked(KnowledgeUpdateServiceRequest.ADD_GOAL, self.goalNameComboBox.currentText(),
+                                        self.goalComboBox)
         self.refresh_model()
 
     def _handle_add_fact_clicked(self, data):
-        self._handle_add_button_clicked(KnowledgeUpdateServiceRequest.ADD_KNOWLEDGE, self.factNameComboBox.currentText(), self.factComboBox)
+        self._handle_add_button_clicked(KnowledgeUpdateServiceRequest.ADD_KNOWLEDGE,
+                                        self.factNameComboBox.currentText(), self.factComboBox)
         self.refresh_model()
 
     """
     called when the remove goal button is clicked
     """
+
     def _handle_remove_button_clicked(self, updateType, removeNameList, removeMsgList):
         rospy.wait_for_service('/kcl_rosplan/update_knowledge_base')
         for item in removeNameList:
@@ -368,20 +381,23 @@ class PlanViewWidget(QWidget):
                 update_client = rospy.ServiceProxy('/kcl_rosplan/update_knowledge_base', KnowledgeUpdateService)
                 resp = update_client(updateType, removeMsgList[item.text()])
             except rospy.ServiceException, e:
-                print "Service call failed: %s"%e
+                print "Service call failed: %s" % e
         self.refresh_model()
 
     def _handle_remove_goal_clicked(self, checked):
-        self._handle_remove_button_clicked(KnowledgeUpdateServiceRequest.REMOVE_GOAL, self.goalView.selectedItems(), self._goal_list)
+        self._handle_remove_button_clicked(KnowledgeUpdateServiceRequest.REMOVE_GOAL, self.goalView.selectedItems(),
+                                           self._goal_list)
         self.refresh_model()
 
     def _handle_remove_fact_clicked(self, checked):
-        self._handle_remove_button_clicked(KnowledgeUpdateServiceRequest.REMOVE_KNOWLEDGE, self.modelView.selectedItems(), self._fact_list)
+        self._handle_remove_button_clicked(KnowledgeUpdateServiceRequest.REMOVE_KNOWLEDGE,
+                                           self.modelView.selectedItems(), self._fact_list)
         self.refresh_model()
 
     """
     called when the add isntance button is clicked
     """
+
     def _handle_add_instance_clicked(self, checked):
         if self.instanceNameEdit.text() == '':
             return
@@ -399,7 +415,8 @@ class PlanViewWidget(QWidget):
 
     """
     Qt methods
-    """ 
+    """
+
     def shutdown_plugin(self):
         pass
 

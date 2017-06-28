@@ -10,6 +10,8 @@ namespace KCL_rosplan {
 	 */
 	bool KnowledgeComparitor::containsKnowledge(const rosplan_knowledge_msgs::KnowledgeItem &a, const rosplan_knowledge_msgs::KnowledgeItem &b) {
 
+        int matches = 0;
+
 		if(a.knowledge_type != b.knowledge_type) return false;
 	
 		if(a.knowledge_type == rosplan_knowledge_msgs::KnowledgeItem::INSTANCE) {
@@ -28,20 +30,23 @@ namespace KCL_rosplan {
 			for(size_t i=0;i<a.values.size();i++) {
 
 				// don't care about this parameter
-				if("" == a.values[i].value) continue;
+				if("" == a.values[i].value) {
+                    ++matches;
+                    continue;
+                }
 
 				// find matching object in parameters of b
-				for(size_t i=0;i<b.values.size();i++) {
-					if(! boost::iequals(a.values[i].key, b.values[i].key) ||
-					   ! boost::iequals(a.values[i].value, b.values[i].value))
-					{
-						return false;
+				for(size_t j=0;j<b.values.size();j++) {
+					if( boost::iequals(a.values[i].key, b.values[j].key) &&
+					    boost::iequals(a.values[i].value, b.values[j].value)) {
+                        ++matches;
+						break;
 					}
 				}
 			}
 		}
 
-		return true;
+		return (matches == a.values.size());
 	}
 
 	/**

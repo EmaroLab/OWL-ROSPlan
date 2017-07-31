@@ -1,8 +1,8 @@
 <launch>
     <include file="$(find rosplan_knowledge_base)/launch/rosplan_knowledge_base.launch" />
     <include file="$(find rosplan_planning_system)/launch/planning_system.launch" />
-    <node name="increase_angle_node" pkg="paco_actions" type="increase_angle_node" />
-    <node name="decrease_angle_node" pkg="paco_actions" type="decrease_angle_node" />
+    <node name="increase_angle_node" pkg="rosplan_dummy_actions" type="dummy_increase_angle_node" />
+    <node name="decrease_angle_node" pkg="rosplan_dummy_actions" type="dummy_decrease_angle_node" />
     <node name="rqt_gui" pkg="rqt_gui" type="rqt_gui" />
     <node name="rosplan_dummy_input" pkg="rosplan_dummy_input" type="dummy_input_node.py" />
 </launch>

@@ -1,6 +1,7 @@
 #include "rosplan_knowledge_base/VALVisitorOperator.h"
 
 /* implementation of rosplan_knowledge_base::VALVisitorOperator */
+
 namespace KCL_rosplan {
 
 	/* encoding state */

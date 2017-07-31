@@ -1,0 +1,9 @@
+<launch>
+    <include file="$(find paco_ar_perception)/launch/markers.launch" />
+    <include file="$(find rosplan_knowledge_base)/launch/rosplan_knowledge_base.launch" />
+    <include file="$(find rosplan_planning_system)/launch/planning_system.launch" />
+    <node name="paco_ar_perception_node" pkg="paco_ar_perception" type="paco_ar_perception_node.py" output="screen"/>
+    <node name="increase_angle_node" pkg="paco_actions" type="increase_angle_node" />
+    <node name="decrease_angle_node" pkg="paco_actions" type="decrease_angle_node" />
+    <node name="rqt_gui" pkg="rqt_gui" type="rqt_gui" />
+</launch>

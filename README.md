@@ -104,20 +104,14 @@ git clone https://github.com/clearpathrobotics/occupancy_grid_utils
 git clone https://github.com/EmaroLab/OWL-ROSPlan
 ```
 
-If you want to run the example, clone also:
-
-```sh
-https://github.com/EmaroLab/paco_actions 
-```
-
-Compile everything:
+To run the example, compile everything first:
 
 ```sh
 cd ..
 catkin_make
 ```
 
-As for ROSPlan, remember to stop MongoDB before launching OWL-ROSPlan for the first time in a new session:
+Then, remember to stop MongoDB before launching OWL-ROSPlan for the first time in a new session (just like in ROSPlan):
 
 ```sh
 sudo service mongodb stop

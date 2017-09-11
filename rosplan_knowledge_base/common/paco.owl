@@ -212,6 +212,14 @@
     
 
 
+    <!-- https://github.com/EmaroLab/paco/owl/paco#Satisfied_state -->
+
+    <owl:Class rdf:about="https://github.com/EmaroLab/paco/owl/paco#Satisfied_state">
+        <rdfs:subClassOf rdf:resource="https://github.com/EmaroLab/paco/owl/paco#State"/>
+    </owl:Class>
+    
+
+
     <!-- https://github.com/EmaroLab/paco/owl/paco#State -->
 
     <owl:Class rdf:about="https://github.com/EmaroLab/paco/owl/paco#State">
@@ -375,6 +383,14 @@
     
 
 
+    <!-- https://github.com/EmaroLab/paco/owl/paco#Satisfied_state_instance -->
+
+    <owl:NamedIndividual rdf:about="https://github.com/EmaroLab/paco/owl/paco#Satisfied_state_instance">
+        <rdf:type rdf:resource="https://github.com/EmaroLab/paco/owl/paco#Satisfied_state"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
@@ -433,12 +449,6 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-    <rdf:Description rdf:about="https://github.com/EmaroLab/paco/owl/paco#t2">
-        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
-    </rdf:Description>
-    <rdf:Description rdf:about="https://github.com/EmaroLab/paco/owl/paco#t3">
-        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
-    </rdf:Description>
     <rdf:Description rdf:about="https://github.com/EmaroLab/paco/owl/paco#P">
         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
     </rdf:Description>
@@ -447,6 +457,146 @@
     </rdf:Description>
     <rdf:Description rdf:about="https://github.com/EmaroLab/paco/owl/paco#R">
         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="https://github.com/EmaroLab/paco/owl/paco#t2">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="https://github.com/EmaroLab/paco/owl/paco#t3">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description>
+        <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</swrla:isRuleEnabled>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"></rdfs:comment>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PNormSat</rdfs:label>
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+        <swrl:body>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                        <swrl:classPredicate rdf:resource="https://github.com/EmaroLab/paco/owl/paco#Predicate_descriptive"/>
+                        <swrl:argument1 rdf:resource="https://github.com/EmaroLab/paco/owl/paco#P"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                        <rdf:first>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                <swrl:propertyPredicate rdf:resource="https://github.com/EmaroLab/paco/owl/paco#has_arg_1"/>
+                                <swrl:argument1 rdf:resource="https://github.com/EmaroLab/paco/owl/paco#P"/>
+                                <swrl:argument2 rdf:resource="https://github.com/EmaroLab/paco/owl/paco#t1"/>
+                            </rdf:Description>
+                        </rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                <rdf:first>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                        <swrl:propertyPredicate rdf:resource="https://github.com/EmaroLab/paco/owl/paco#has_arg_1"/>
+                                        <swrl:argument1 rdf:resource="https://github.com/EmaroLab/paco/owl/paco#R"/>
+                                        <swrl:argument2 rdf:resource="https://github.com/EmaroLab/paco/owl/paco#t1"/>
+                                    </rdf:Description>
+                                </rdf:first>
+                                <rdf:rest>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                        <rdf:first>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                                                <swrl:classPredicate rdf:resource="https://github.com/EmaroLab/paco/owl/paco#Predicate_normative"/>
+                                                <swrl:argument1 rdf:resource="https://github.com/EmaroLab/paco/owl/paco#R"/>
+                                            </rdf:Description>
+                                        </rdf:first>
+                                        <rdf:rest>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                                <rdf:first>
+                                                    <rdf:Description>
+                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                                                        <swrl:classPredicate rdf:resource="https://github.com/EmaroLab/paco/owl/paco#has-angle"/>
+                                                        <swrl:argument1 rdf:resource="https://github.com/EmaroLab/paco/owl/paco#P"/>
+                                                    </rdf:Description>
+                                                </rdf:first>
+                                                <rdf:rest>
+                                                    <rdf:Description>
+                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                                        <rdf:first>
+                                                            <rdf:Description>
+                                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                                                <swrl:propertyPredicate rdf:resource="https://github.com/EmaroLab/paco/owl/paco#has_arg_2"/>
+                                                                <swrl:argument1 rdf:resource="https://github.com/EmaroLab/paco/owl/paco#P"/>
+                                                                <swrl:argument2 rdf:resource="https://github.com/EmaroLab/paco/owl/paco#t2"/>
+                                                            </rdf:Description>
+                                                        </rdf:first>
+                                                        <rdf:rest>
+                                                            <rdf:Description>
+                                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                                                <rdf:first>
+                                                                    <rdf:Description>
+                                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                                                        <swrl:propertyPredicate rdf:resource="https://github.com/EmaroLab/paco/owl/paco#has_arg_2"/>
+                                                                        <swrl:argument1 rdf:resource="https://github.com/EmaroLab/paco/owl/paco#R"/>
+                                                                        <swrl:argument2 rdf:resource="https://github.com/EmaroLab/paco/owl/paco#t2"/>
+                                                                    </rdf:Description>
+                                                                </rdf:first>
+                                                                <rdf:rest>
+                                                                    <rdf:Description>
+                                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                                                        <rdf:first>
+                                                                            <rdf:Description>
+                                                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                                                                                <swrl:classPredicate rdf:resource="https://github.com/EmaroLab/paco/owl/paco#has-angle"/>
+                                                                                <swrl:argument1 rdf:resource="https://github.com/EmaroLab/paco/owl/paco#R"/>
+                                                                            </rdf:Description>
+                                                                        </rdf:first>
+                                                                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                                                    </rdf:Description>
+                                                                </rdf:rest>
+                                                            </rdf:Description>
+                                                        </rdf:rest>
+                                                    </rdf:Description>
+                                                </rdf:rest>
+                                            </rdf:Description>
+                                        </rdf:rest>
+                                    </rdf:Description>
+                                </rdf:rest>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </rdf:rest>
+            </rdf:Description>
+        </swrl:body>
+        <swrl:head>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                        <swrl:propertyPredicate rdf:resource="https://github.com/EmaroLab/paco/owl/paco#is_defined_by"/>
+                        <swrl:argument1 rdf:resource="https://github.com/EmaroLab/paco/owl/paco#Final_state_instance"/>
+                        <swrl:argument2 rdf:resource="https://github.com/EmaroLab/paco/owl/paco#R"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                        <rdf:first>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                <swrl:propertyPredicate rdf:resource="https://github.com/EmaroLab/paco/owl/paco#is_defined_by"/>
+                                <swrl:argument1 rdf:resource="https://github.com/EmaroLab/paco/owl/paco#Satisfied_state_instance"/>
+                                <swrl:argument2 rdf:resource="https://github.com/EmaroLab/paco/owl/paco#R"/>
+                            </rdf:Description>
+                        </rdf:first>
+                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                    </rdf:Description>
+                </rdf:rest>
+            </rdf:Description>
+        </swrl:head>
     </rdf:Description>
     <rdf:Description>
         <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</swrla:isRuleEnabled>

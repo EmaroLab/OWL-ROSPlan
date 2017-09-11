@@ -139,15 +139,15 @@ class PlanViewWidget(QWidget):
     def refresh_model(self):
         # goals
         rospy.wait_for_service('/kcl_rosplan/get_current_goals')
-        rospy.wait_for_service('/kcl_rosplan/get_all_goals')
+        rospy.wait_for_service('/kcl_rosplan/get_satisfied_goals')
         selected_list = []
         for item in self.goalView.selectedItems():
             selected_list.append(item.text())
         try:
             active_goals_client = rospy.ServiceProxy('/kcl_rosplan/get_current_goals', GetAttributeService)
-            all_goals_client = rospy.ServiceProxy('/kcl_rosplan/get_all_goals', GetAttributeService)
-            resp_active = active_goals_client('')
-            resp_all = all_goals_client('')
+            satisfied_goals_client = rospy.ServiceProxy('/kcl_rosplan/get_satisfied_goals', GetAttributeService)
+            resp_all = active_goals_client('')
+            resp_satisfied = satisfied_goals_client('')
             self.goalView.clear()
             self._goal_list.clear()
             for goal in resp_all.attributes:
@@ -158,7 +158,7 @@ class PlanViewWidget(QWidget):
                     goalText = goalText + ' ' + keyval.value
                 goalText = goalText + ')'
                 item.setText(goalText)
-                if goal not in resp_active.attributes:
+                if goal in resp_satisfied.attributes:
                     item.setBackground(QColor('#7fc97f'))
                 else:
                     item.setBackground(QColor('#f97070'))
@@ -174,10 +174,10 @@ class PlanViewWidget(QWidget):
             selected_list.append(item.text())
         try:
             model_client = rospy.ServiceProxy('/kcl_rosplan/get_current_knowledge', GetAttributeService)
-            resp_active = model_client('')
+            resp_all = model_client('')
             self.modelView.clear()
             self._fact_list.clear()
-            for attribute in resp_active.attributes:
+            for attribute in resp_all.attributes:
                 attribute_text = ''
                 item = QListWidgetItem(self.modelView)
                 item.setForeground(QColor('#2e3436'))
@@ -206,11 +206,11 @@ class PlanViewWidget(QWidget):
         self.instanceView.clear()
         for typename in self._type_list:
             instance_client = rospy.ServiceProxy('/kcl_rosplan/get_current_instances', GetInstanceService)
-            resp_active = instance_client(typename)
+            resp_all = instance_client(typename)
             item = QTreeWidgetItem(self.instanceView)
             item.setForeground(0, QBrush(QColor('#2e3436')))
             item.setText(0, typename)
-            for instanceName in resp_active.instances:
+            for instanceName in resp_all.instances:
                 inst = QTreeWidgetItem(item)
                 inst.setForeground(0, QBrush(QColor('#2e3436')))
                 inst.setText(0, instanceName)

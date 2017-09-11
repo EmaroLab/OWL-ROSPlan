@@ -28,7 +28,7 @@ The system requires you to provide an ontology with a specific structure, which 
  The general idea is that knowledge and instances fed to ROSPlan gets encoded in the ontology as individuals. The same goes for goals, that are rather considered as *norms*. When a norm is not satisfied, an SWRL rule detects the issue and add that goal to a *final state* individual, from which it can be later retrived to generate a problem file. The services to retrieve goals are:
 
 + ```/kcl_rosplan/get_current_goals```, gives only active goals (i.e., not satisfied norms)
-+ ```/kcl_rosplan/get_all_goals```, gives all goals submitted by the user in the usual ROSPlan way, only used by the gui
++ ```/kcl_rosplan/get_satisfied_goals```, gives all goals currently satisfied, only used by the gui
 
 Due to the nature of ontologies, you may want to take this work as an example and **reimplement** your own ontological system for reasoning and instance checking. In case, you may find useful modifying the ```ArmorManager``` class (e.g., you can modify the getCurrentGoals method if you have a different goal inference mechanism).
 

@@ -36,6 +36,8 @@ namespace KCL_rosplan {
 
         std::string addPredicate(std::string predicateName, rosplan_knowledge_msgs::KnowledgeItem msg, bool normative);
 
+        std::vector<rosplan_knowledge_msgs::KnowledgeItem> getGoals(std::string goal_type);
+
         bool applyChanges();
 
     public:
@@ -48,6 +50,7 @@ namespace KCL_rosplan {
         bool removeEntity(std::string entityName);
         bool clearClass(std::string className);
         std::vector<rosplan_knowledge_msgs::KnowledgeItem> getCurrentGoals();
+        std::vector<rosplan_knowledge_msgs::KnowledgeItem> getSatisfiedGoals();
         bool loadOntology(std::string path, std::string iri);
         bool mountOnOntology();
         bool unmountFromOntology();

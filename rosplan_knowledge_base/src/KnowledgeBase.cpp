@@ -374,9 +374,9 @@ namespace KCL_rosplan {
         return true;
 	}
 
-    bool KnowledgeBase::getAllGoals(rosplan_knowledge_msgs::GetAttributeService::Request  &req, rosplan_knowledge_msgs::GetAttributeService::Response &res) {
-		for(size_t i=0; i<model_goals.size(); i++)
-            res.attributes.push_back(model_goals[i]);
+    bool KnowledgeBase::getSatisfiedGoals(rosplan_knowledge_msgs::GetAttributeService::Request &req,
+                                          rosplan_knowledge_msgs::GetAttributeService::Response &res) {
+		res.attributes = armorManager->getSatisfiedGoals();
         return true;
     }
 
@@ -571,7 +571,8 @@ int main(int argc, char **argv)
 	ros::ServiceServer currentInstanceServer = n.advertiseService("/kcl_rosplan/get_current_instances", &KCL_rosplan::KnowledgeBase::getCurrentInstances, &kb);
 	ros::ServiceServer currentKnowledgeServer = n.advertiseService("/kcl_rosplan/get_current_knowledge", &KCL_rosplan::KnowledgeBase::getCurrentKnowledge, &kb);
 	ros::ServiceServer currentGoalsServer = n.advertiseService("/kcl_rosplan/get_current_goals", &KCL_rosplan::KnowledgeBase::getCurrentGoals, &kb);
-    ros::ServiceServer allGoalsServer = n.advertiseService("/kcl_rosplan/get_all_goals", &KCL_rosplan::KnowledgeBase::getAllGoals, &kb);
+    ros::ServiceServer allGoalsServer = n.advertiseService("/kcl_rosplan/get_satisfied_goals",
+                                                           &KCL_rosplan::KnowledgeBase::getSatisfiedGoals, &kb);
 
 	// planning and mission filter
 	kb.plan_filter.notification_publisher = n.advertise<rosplan_knowledge_msgs::Notification>("/kcl_rosplan/notification", 10, true);

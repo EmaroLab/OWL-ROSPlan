@@ -105,11 +105,11 @@ namespace KCL_rosplan{
         return addPredicate(msg.attribute_name, msg, true);
     }
 
-    std::vector<rosplan_knowledge_msgs::KnowledgeItem> ArmorManager::getCurrentGoals(){
+    std::vector<rosplan_knowledge_msgs::KnowledgeItem> ArmorManager::getGoals(std::string goal_type){
         //TODO add exceptions
         std::vector<rosplan_knowledge_msgs::KnowledgeItem> goals;
         armor_msgs::ArmorDirectiveRequest req =
-                newMessage("QUERY", "OBJECTPROP", "IND", {"is_defined_by", "Final_state_instance"});
+                newMessage("QUERY", "OBJECTPROP", "IND", {"is_defined_by", goal_type});
         armor_msgs::ArmorDirectiveResponse res;
         if(armorClient.call(req, res) && res.armor_response.success && res.armor_response.queried_objects.size() > 0){
             // initialize goal
@@ -152,6 +152,14 @@ namespace KCL_rosplan{
             }
         }else return goals;
         return goals;
+    }
+
+    std::vector<rosplan_knowledge_msgs::KnowledgeItem> ArmorManager::getCurrentGoals() {
+        return getGoals("Final_state_instance");
+    }
+
+    std::vector<rosplan_knowledge_msgs::KnowledgeItem> ArmorManager::getSatisfiedGoals() {
+        return getGoals("Satisfied_state_instance");
     }
 
     bool ArmorManager::clearClass(std::string className) {

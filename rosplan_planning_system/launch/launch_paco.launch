@@ -1,9 +1,35 @@
 <launch>
+
+    <!-- Initialize motion planning -->
+    <arg name="load_robot_description" default="false"/>
+    <arg name="right_electric_gripper" default="true"/>
+    <arg name="left_electric_gripper" default="true"/>
+    <arg name="left_tip_name" default="left_gripper"/>
+    <arg name="right_tip_name" default="right_gripper"/>
+    <include file="$(find baxter_moveit_config)/launch/planning_context.launch">
+        <arg name="load_robot_description" value="$(arg load_robot_description)"/>
+        <arg name="left_electric_gripper" value="$(arg left_electric_gripper)"/>
+        <arg name="right_electric_gripper" value="$(arg right_electric_gripper)"/>
+        <arg name="left_tip_name" value="$(arg left_tip_name)"/>
+        <arg name="right_tip_name" value="$(arg right_tip_name)"/>
+    </include>
+
+    <include file="$(find baxter_moveit_config)/launch/move_group.launch">
+<!--         <arg name="kinect" value="true" />
+        <arg name="camera_link_pose" default="0.15 0.075 0.5 0.0 0.7854 0.0"/> -->
+        <arg name="allow_trajectory_execution" value="true"/>
+    </include>
+
+    <node name="joint_trajectory_action_server" pkg="baxter_interface" type="joint_trajectory_action_server.py" />
+
+    <!-- launching PACO  -->
     <include file="$(find paco_ar_perception)/launch/markers.launch" />
     <include file="$(find rosplan_knowledge_base)/launch/rosplan_knowledge_base.launch" />
     <include file="$(find rosplan_planning_system)/launch/planning_system.launch" />
-    <node name="paco_ar_perception_node" pkg="paco_ar_perception" type="paco_ar_perception_node.py" output="screen"/>
-    <node name="increase_angle_node" pkg="paco_actions" type="increase_angle_node" />
-    <node name="decrease_angle_node" pkg="paco_actions" type="decrease_angle_node" />
+    <node name="baxter_gripper_manager_node" pkg="baxter_gripper_manager" type="gripper_control" />
+    <node name="paco_ar_perception_node" pkg="paco_ar_perception" type="paco_ar_perception_node.py"/>
+    <node name="increase_angle_node" pkg="paco_actions" type="increase_angle_node" output="screen"/>
+    <node name="decrease_angle_node" pkg="paco_actions" type="decrease_angle_node" output="screen"/>
+    <node name="paco_planning_scene_node" pkg="paco_actions" type="paco_planning_scene_node"/>
     <node name="rqt_gui" pkg="rqt_gui" type="rqt_gui" />
 </launch>

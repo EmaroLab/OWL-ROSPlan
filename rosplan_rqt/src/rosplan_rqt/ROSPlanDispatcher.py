@@ -82,6 +82,7 @@ class PlanViewWidget(QWidget):
         self.addInstanceButton.clicked[bool].connect(self._handle_add_instance_clicked)
         self.removeGoalButton.clicked[bool].connect(self._handle_remove_goal_clicked)
         self.removeFactButton.clicked[bool].connect(self._handle_remove_fact_clicked)
+        self.addSelectedAsNorms.clicked[bool].connect(self._handle_add_selected_as_norms_clicked)
         self.addGoalButton.clicked[bool].connect(self._handle_add_goal_clicked)
         self.addFactButton.clicked[bool].connect(self._handle_add_fact_clicked)
         self.goalNameComboBox.currentIndexChanged[int].connect(self._handle_goal_name_changed)
@@ -391,6 +392,11 @@ class PlanViewWidget(QWidget):
 
     def _handle_remove_fact_clicked(self, checked):
         self._handle_remove_button_clicked(KnowledgeUpdateServiceRequest.REMOVE_KNOWLEDGE,
+                                           self.modelView.selectedItems(), self._fact_list)
+        self.refresh_model()
+
+    def _handle_add_selected_as_norms_clicked(self, checked):
+        self._handle_remove_button_clicked(KnowledgeUpdateServiceRequest.ADD_GOAL,
                                            self.modelView.selectedItems(), self._fact_list)
         self.refresh_model()
 

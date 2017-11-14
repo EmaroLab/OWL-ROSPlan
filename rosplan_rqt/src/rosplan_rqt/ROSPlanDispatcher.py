@@ -14,7 +14,7 @@ from rosplan_knowledge_msgs.srv import *
 from rosplan_knowledge_msgs.msg import *
 
 from python_qt_binding import loadUi, QT_BINDING_VERSION
-from python_qt_binding.QtCore import Qt, QTimer, Signal, Slot
+from python_qt_binding.QtCore import Qt, QTimer, QTime, Signal, Slot
 
 if QT_BINDING_VERSION.startswith('4'):
     from python_qt_binding.QtGui import QHeaderView, QTreeWidgetItem, QListWidgetItem, QWidget, QColor, QPalette, QBrush
@@ -36,6 +36,9 @@ class PlanViewWidget(QWidget):
     _goal_list = {}
     _fact_list = {}
 
+    # continuous mode timer
+    _continuous_mode_timer = QTime()
+
     def __init__(self, plugin=None):
         super(PlanViewWidget, self).__init__()
 
@@ -43,6 +46,10 @@ class PlanViewWidget(QWidget):
         ui_file = os.path.join(rospkg.RosPack().get_path('rosplan_rqt'), 'resource', 'dispatcher.ui')
         loadUi(ui_file, self)
         self.setObjectName('ROSPlanDispatcherUI')
+
+        # Initialize Continuous Mode
+        self.continuousModeToggle.setStyleSheet("background-color: green")
+        self._continuous_mode_timer.start()
 
         # populate goal combo boxes
         rospy.wait_for_service('/kcl_rosplan/get_domain_predicates')
@@ -83,6 +90,7 @@ class PlanViewWidget(QWidget):
         self.removeGoalButton.clicked[bool].connect(self._handle_remove_goal_clicked)
         self.removeFactButton.clicked[bool].connect(self._handle_remove_fact_clicked)
         self.addSelectedAsNorms.clicked[bool].connect(self._handle_add_selected_as_norms_clicked)
+        self.continuousModeToggle.clicked[bool].connect(self._handle_continuous_mode_toggle_clicked)
         self.addGoalButton.clicked[bool].connect(self._handle_add_goal_clicked)
         self.addFactButton.clicked[bool].connect(self._handle_add_fact_clicked)
         self.goalNameComboBox.currentIndexChanged[int].connect(self._handle_goal_name_changed)
@@ -130,8 +138,8 @@ class PlanViewWidget(QWidget):
         self.refresh_model()
 
     def start(self):
-        self._timer_refresh_plan.start(1000)
-        self._timer_refresh_goals.start(10000)
+        self._timer_refresh_plan.start(100)
+        self._timer_refresh_goals.start(4000)
 
     """
     updating goal and model view
@@ -226,6 +234,17 @@ class PlanViewWidget(QWidget):
         expanded_list = []
         root = self.planView.invisibleRootItem()
         child_count = root.childCount()
+        if self.continuousModeToggle.isChecked() and self.statusLabel.text() == "Ready":
+            if self._continuous_mode_timer.elapsed() > 5000:
+                self._plan_pub.publish('plan')
+                self._continuous_mode_timer.restart()
+            self.continuousModeTimeout.setText(str(5 - (self._continuous_mode_timer.elapsed()/1000)))
+        else:
+            self.continuousModeTimeout.setText("-")
+
+        if not self.continuousModeToggle.isChecked():
+            self._continuous_mode_timer.restart()
+
         for i in range(child_count):
             item = root.child(i)
             if item.isExpanded():
@@ -274,6 +293,15 @@ class PlanViewWidget(QWidget):
     def _handle_plan_clicked(self, checked):
         self._status_list.clear()
         self._plan_pub.publish('plan')
+
+    """
+    called when contious mode button is clicked
+    """
+    def _handle_continuous_mode_toggle_clicked(self, checked):
+        if self.continuousModeToggle.isChecked():
+            self.continuousModeToggle.setStyleSheet("background-color: red")
+        else:
+            self.continuousModeToggle.setStyleSheet("background-color: green")
 
     """
     called when the plan button is clicked; sends a planning request
@@ -401,7 +429,7 @@ class PlanViewWidget(QWidget):
         self.refresh_model()
 
     """
-    called when the add isntance button is clicked
+    called when the add instance button is clicked
     """
 
     def _handle_add_instance_clicked(self, checked):

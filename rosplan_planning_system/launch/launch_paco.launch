@@ -1,5 +1,5 @@
 <launch>
-
+    
     <!-- Initialize motion planning -->
     <arg name="load_robot_description" default="false"/>
     <arg name="right_electric_gripper" default="true"/>
@@ -23,6 +23,10 @@
     <node name="joint_trajectory_action_server" pkg="baxter_interface" type="joint_trajectory_action_server.py" />
 
     <!-- launching PACO  -->
+    <param name="/paco/links_number"  type="int" value="5" />
+    <param name="/paco/resolution"  type="int" value="4" />
+    <param name="/paco/frame_acquisition_timeout" type="int" value="1" />
+
     <include file="$(find paco_ar_perception)/launch/markers.launch" />
     <include file="$(find rosplan_knowledge_base)/launch/rosplan_knowledge_base.launch" />
     <include file="$(find rosplan_planning_system)/launch/planning_system.launch" />
@@ -32,4 +36,6 @@
     <node name="decrease_angle_node" pkg="paco_actions" type="decrease_angle_node" output="screen"/>
     <node name="paco_planning_scene_node" pkg="paco_actions" type="paco_planning_scene_node"/>
     <node name="rqt_gui" pkg="rqt_gui" type="rqt_gui" />
+
+    <param name="/rosplan_planning_system/max_dispatch_attempts" type="int" value="1" />
 </launch>
